@@ -1,0 +1,13 @@
+[project]
+name = "django-core-ex"
+version = "0.1.0"
+description = "Base Django project template"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=5.1.7",
+    "environs[django]>=14.1.1",
+    "gunicorn>=23.0.0",
+    "psycopg[binary]>=3.2.6",
+    "whitenoise>=6.9.0",
+]
