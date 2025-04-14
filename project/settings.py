@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    # anymail
+    'anymail',
     # local apps
     'users.apps.UsersConfig',
     'core.apps.CoreConfig',
@@ -57,15 +59,18 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-SITE_ID = 1
+SITE_DOMAIN = env.str('SITE_DOMAIN', "localhost:8000")
+SITE_NAME = env.str('SITE_NAME', "Local Dev")
+SITE_ID = 1  # required by django.contrib.sites
 
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # Disable username related functionality
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'  # Required by django-allauth
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '%s: ' % SITE_NAME
 ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False  # Send email for password reset attempts by unknown users
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'none'  # 'none' defaults to LOGIN_REDIRECT_URL
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
@@ -182,5 +187,14 @@ INTERNAL_IPS = [
 ]
 SHOW_TOOLBAR_CALLBACK = lambda request: DEBUG
 
-# Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for development
+
+# Email settings (Mailgun)
+ANYMAIL = {
+    'MAILGUN_API_KEY': env.str('MAILGUN_API_KEY'),
+    'MAILGUN_SENDER_DOMAIN': env.str('MAILGUN_DOMAIN'),  # e.g., sandbox123456.mailgun.org or yourdomain.com
+}
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL')
+# DEFAULT_FROM_EMAIL = f"admin@{env.str('MAILGUN_DOMAIN')}"  # For user-facing emails
+# SERVER_EMAIL = f"errors@{env.str('MAILGUN_DOMAIN')}"  # For system emails (e.g., error reports)

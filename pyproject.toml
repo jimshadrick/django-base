@@ -1,5 +1,5 @@
 [project]
-name = "django-core-ex"
+name = "django-base"
 version = "0.1.0"
 description = "Base Django project template"
 readme = "README.md"
@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "django>=5.1.7",
     "django-allauth[socialaccount]>=65.7.0",
+    "django-anymail[mailgun]>=13.0",
     "django-debug-toolbar>=5.1.0",
     "environs[django]>=14.1.1",
     "gunicorn>=23.0.0",
