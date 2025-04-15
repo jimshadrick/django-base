@@ -2,7 +2,7 @@
 set -e
 set -o pipefail
 
-REPO_URL="https://github.com/your-user/your-repo.git"
+REPO_URL="https://github.com/jimshadrick/django-base.git"
 PROJECT_DIR="/var/www/sites/djbaseapp"
 
 echo "==> Navigating to project directory..."
