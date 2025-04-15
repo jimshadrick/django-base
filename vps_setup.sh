@@ -1,4 +1,6 @@
 #!/bin/bash
+# Cleanup script prepares the server for a new deployment
+
 set -e
 set -o pipefail
 

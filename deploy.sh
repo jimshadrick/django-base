@@ -1,4 +1,6 @@
 #!/bin/bash
+# Post-deployment script for Django
+
 set -e # Exit immediately if a command exits with a non-zero status.
 
 echo "--- Running Database Migrations ---"
