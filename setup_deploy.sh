@@ -1,46 +1,33 @@
-#!/bin/bash
 # setup_deploy.sh
-# Usage: ./setup_deploy.sh <project_name>
+#!/bin/bash
+# Usage: ./setup_deploy.sh <project_name> <deploy_user> [--skip-post]
 # Description: Creates/updates a Django project deployment on a server
 
 set -e
 set -o pipefail
 
-# === PARAMETERS ===
 PROJECT_NAME=$1
+DEPLOY_USER=$2
+SKIP_POST=$3
 
-if [ -z "$PROJECT_NAME" ]; then
-  echo "Usage: $0 <project_name>"
+if [ -z "$PROJECT_NAME" ] || [ -z "$DEPLOY_USER" ]; then
+  echo "Usage: $0 <project_name> <deploy_user> [--skip-post]"
   exit 1
 fi
 
-DEPLOY_USER=$(whoami)
 APP_DIR="/var/www/sites/$PROJECT_NAME"
 TEMP_ENV_BACKUP="/tmp/project_env_backup_$PROJECT_NAME"
-REPO_URL="https://github.com/your-user/$PROJECT_NAME.git"  # <-- Replace manually for each project
+REPO_URL="https://github.com/jimshadrick/django-base.git"
 
-echo "📁 Ensuring project directory exists and is owned by $DEPLOY_USER..."
+echo "📁 Ensuring project directory exists and is owned by $DEPLOY_USER & www-data group ..."
 sudo mkdir -p "$APP_DIR"
 sudo chown -R "$DEPLOY_USER:www-data" "$APP_DIR"
 sudo chmod -R 755 "$APP_DIR"
 
 cd "$APP_DIR"
 
-# === Generate .env scaffold if missing ===
-ENV_FILE="$APP_DIR/.env"
-if [ ! -f "$ENV_FILE" ]; then
-  echo "📝 Creating starter .env file..."
-  cat <<EOF > "$ENV_FILE"
-SECRET_KEY=changeme123
-DEBUG=True
-DATABASE_URL=postgres://user:password@localhost:5432/dbname
-ALLOWED_HOSTS=127.0.0.1,localhost
-EOF
-  sudo chown "$DEPLOY_USER:www-data" "$ENV_FILE"
-  sudo chmod 640 "$ENV_FILE"
-fi
-
 # === Backup .env file before wiping directory ===
+ENV_FILE="$APP_DIR/.env"
 if [ -f .env ]; then
   echo "🔐 Backing up .env file temporarily..."
   cp .env "$TEMP_ENV_BACKUP"
@@ -68,8 +55,13 @@ echo "📦 Installing dependencies with uv..."
 /home/$DEPLOY_USER/.local/bin/uv sync
 
 echo "⚙️  Activating virtual environment..."
+cd "$APP_DIR"
 source .venv/bin/activate
 
-# === Post-deploy script ===
-echo "🚀 Running post-deployment script..."
-./dj-post-deploy.sh
+# === Post deployment script ===
+if [ "$SKIP_POST" != "--skip-post" ]; then
+  echo "🚀 Running post-deployment script..."
+  ./post_deploy.sh
+else
+  echo "⚠️ Skipping post-deployment script."
+fi

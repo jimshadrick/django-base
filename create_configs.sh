@@ -16,6 +16,11 @@ UV_PATH="/home/$DEPLOY_USER/.local/bin/uv"
 
 echo "🛠️ Generating and deploying Gunicorn and Nginx configs for '$PROJECT_NAME'..."
 
+# === Ensure DEPLOY_USER has access to project files ===
+sudo chown -R $DEPLOY_USER:www-data "$APP_DIR"
+sudo chmod 640 "$APP_DIR/.env"
+sudo chmod 755 "$APP_DIR"
+
 # === Gunicorn socket ===
 cat <<EOF | sudo tee /etc/systemd/system/gunicorn-$PROJECT_NAME.socket > /dev/null
 [Unit]
@@ -94,5 +99,26 @@ sudo systemctl start gunicorn-$PROJECT_NAME.socket
 
 # === Test and reload Nginx ===
 sudo nginx -t && sudo systemctl reload nginx
+
+# === Configure logrotate for Nginx project logs ===
+LOGROTATE_CONFIG_PATH="/etc/logrotate.d/$PROJECT_NAME"
+
+sudo tee "$LOGROTATE_CONFIG_PATH" > /dev/null <<EOF
+/var/log/nginx/$PROJECT_NAME*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 640 www-data adm
+    sharedscripts
+    postrotate
+        [ -s /run/nginx.pid ] && kill -USR1 \$(cat /run/nginx.pid)
+    endscript
+}
+EOF
+
+echo "🧾 Logrotate configuration added at \$LOGROTATE_CONFIG_PATH"
 
 echo "✅ Deployment for '$PROJECT_NAME' completed."

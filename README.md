@@ -11,6 +11,9 @@ production deployment.
 - `core/`: Contains the core application models and logic.
 - `accounts/`: App for user account management and password changes.
 - `manage.py`: Django management script for running commands.
+- `init_env.sh`: One-time script to scaffold the .env file and prepare the project directory.
+- `setup_deploy.sh`: Reproducible deployment script for DigitalOcean VPS.
+- `post_deploy.sh`: Run after deploy to apply migrations, collect static files, etc.
 
 ---
 
@@ -27,7 +30,7 @@ production deployment.
     CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
     CONN_MAX_AGE=60
     ```
-4. Run migrations and setup:
+4. Run migrations and setup: `./post_deploy.sh`
     ```bash
     uv run manage.py migrate
     uv run manage.py collectstatic
@@ -66,7 +69,8 @@ production deployment.
 
 ## 🚀 Production Deployment (DigitalOcean VPS)
 
-This app contains scripts that facilitates deployment to a VPS running Ubuntu, with Gunicorn, Nginx, and systemd.
+This app contains scripts to deploy the project to a VPS manually using Bash scripts. This allows you to manage
+deployments without requiring CI/CD.
 
 ### 🔧 Prerequisites
 
@@ -82,13 +86,13 @@ This app contains scripts that facilitates deployment to a VPS running Ubuntu, w
 
 ---
 
-### 📂 Scripts for VPS Deployment
+### 📂 Scripts for VPS Deployment (Located in project root)
 
-| Script              | Purpose                                                                                                                                                |
-|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `setup_deploy.sh`   | Deploys the app to `/var/www/sites/<project>`, sets ownership, installs Django dependencies, and runs a post-deploy script. Safe to rerun for updates. |
-| `create_configs.sh` | One-time system config: creates Gunicorn/Nginx files using `<project_name>`, then enables services and reloads Nginx. Requires `sudo`.                 |
-| `post_deploy.sh`    | Called by `setup_deploy.sh`: runs the Django `migrate`, `collectstatic`, and `init_site` commands.                                                     |
+| Script            | Purpose                                                                                                                                     |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `init_env.sh`     | One-time script to create `/var/www/sites/<project>` and scaffold a placeholder `.env` file. Must be run before first deployment.           |
+| `setup_deploy.sh` | Main deployment script: wipes project directory, clones repo, restores `.env`, installs dependencies, and optionally runs `post_deploy.sh`. |
+| `post_deploy.sh`  | Invoked by `setup_deploy.sh`. Runs Django commands: `migrate`, `collectstatic`, and `init_site`.                                            |
 
 ---
 
@@ -98,41 +102,84 @@ This app contains scripts that facilitates deployment to a VPS running Ubuntu, w
 # SSH into your server
 ssh myuser@your-server-ip
 
-# Run initial deployment (will create .env if missing)
-./setup-deployment.sh myproject
+# Create the scripts directory if it doesn't exist
+sudo mkdir -p /opt/scripts
+sudo chown $USER:www-data /opt/scripts  # optional: let your user manage it
 
-# Test with runserver if desired
+# On your local machine - copy the following scripts to the server
+scp init_env.sh myuser@your-server:/opt/scripts/init_env.sh
+scp init_env.sh myuser@your-server:/opt/scripts/setup_deploy.sh
 
-# Set up system services
+# Make the scripts executable
+sudo chmod +x /opt/scripts/init_env.sh
+sudo chmod +x /opt/scripts/setup_deploy.sh
+
+# Run the deployment script as the NON-ROOT user with the optional `--skip-post` flag
+/opt/scripts/setup_deploy.sh myproject myuser --skip-post
+
+# Run one-time initialization
+sudo /opt/scripts/init_env.sh myproject myuser
+
+# Edit the generated .env with real values
+sudo nano /var/www/sites/myproject/.env
+
+# Activate the virtual environment
+cd /var/www/sites/myproject
+source venv/bin/activate  
+
+# Run the post-deployment script as the NON-ROOT user
+./post_deploy.sh
+
+# Perform a quick test of the deployment using the Django development server (optional)
+Do not use runserver for production. This is only a brief sanity check
+    - Temporarily allow port 8000 in DO Cloud Firewall as and Inbound rule.
+    - Run: uv run python manage.py runserver 0.0.0.0:8000`.
+    - Access: http://YOUR_DROPLET_IP:8000.
+    - If it works, stop the server (Ctrl+C).
+    - **Crucially: Remove the temporary port 8000 rule from your DO Cloud Firewall.**
+
+# Create Gunicorn and Nginx configs 
 sudo ./create_configs.sh myproject myuser
 
-# Access your app
-http://your-domain.com or http://your-server-ip
+# Perform a quick test of the deployment using Gunicorn
+- Temporarily allow port 8000 in DO Cloud Firewall as and Inbound rule.
+- Run: uv run gunicorn myproject.wsgi:application --bind 0.0.0.0:8000`.
+- Access: http://YOUR_DROPLET_IP:8001.
+
+# Check the status of the socket and service
+sudo systemctl status gunicorn-myproject.socket
+sudo systemctl status gunicorn-myproject.service
+
+# Restart Gunicorn manually if needed
+sudo systemctl restart gunicorn-myproject
+
+# Test that the socket is working and Nginx is reverse proxying
+curl -I http://localhost
+- Verify you are getting `HTTP/1.1 200 OK`.
 ```
 
 ---
 
-### 🔁 Future Deployments (pull latest changes)
+### 🔁 Future Deployments (pull latest changes and redeploy)
 
 ```bash
-# On the server
 ./setup_deploy.sh myproject
 ```
 
-When `setup_deploy.sh` finishes, calls the `post_deploy.sh` which contains these commands:
+By default, `setup_deploy.sh` calls `post_deploy.sh`, which executes:
 
 ```bash
 uv run python manage.py migrate --noinput
 mkdir -p staticfiles
-uv run python manage.py collectstatic --noinput```
-uv run python manage.py init_site # Django custom command to initialize site (optional) 
+uv run python manage.py collectstatic --noinput
+uv run python manage.py init_site
 ```
 
 ---
 
 ### 🔐 .env Creation Logic
 
-The first deployment will generate a default `.env` like this if one doesn't exist:
+The `init_env.sh` script will generate a default `.env` file like this if none exists:
 
 ```
 SECRET_KEY=changeme123
@@ -141,19 +188,7 @@ DATABASE_URL=postgres://user:password@localhost:5432/dbname
 ALLOWED_HOSTS=127.0.0.1,localhost
 ```
 
-pdate values before enabling production traffic.
-
-### 🔐 Environment Configuration
-
-- `DJANGO_SECRET_KEY`: Generate new secret key for the Django project.
-- `DJANGO_ALLOWED_HOSTS`: Comma-separated list of allowed hosts.
-- `DJANGO_DEBUG`: `True` or `False` (debug mode).
-- `DATABASE_URL`: Full connection string for PostgreSQL.
-- `CSRF_TRUSTED_ORIGINS`: Comma-separated list of trusted domains.
-- `CONN_MAX_AGE`: DB connection max age in seconds (e.g. 60).
-
----
-
+Update values before enabling production traffic.
 
 ---
 
