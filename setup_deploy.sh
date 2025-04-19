@@ -1,7 +1,7 @@
 # setup_deploy.sh
 #!/bin/bash
 # Usage: ./setup_deploy.sh <project_name> <deploy_user> [--skip-post]
-# Description: Creates/updates a Django project deployment on a server
+# Description: Creates a new project directory and performs a Django project deployment on the server
 
 set -e
 set -o pipefail

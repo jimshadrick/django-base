@@ -81,18 +81,20 @@ deployments without requiring CI/CD.
   `nginx postgresql postgresql-contrib python3-dev libpq-dev curl build-essential`)
 - Python 3.13+ and `uv` installed
 - PostgreSQL running and accessible
-- Postgres database created and new user created and assigned permissions to database and public schema
+- Postgres database created (`djbasedb`) and `djdbuser` created and assigned permissions to database and public schema
 - DNS and domain setup (optional)
 
 ---
 
 ### 📂 Scripts for VPS Deployment (Located in project root)
 
-| Script            | Purpose                                                                                                                                     |
-|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `init_env.sh`     | One-time script to create `/var/www/sites/<project>` and scaffold a placeholder `.env` file. Must be run before first deployment.           |
-| `setup_deploy.sh` | Main deployment script: wipes project directory, clones repo, restores `.env`, installs dependencies, and optionally runs `post_deploy.sh`. |
-| `post_deploy.sh`  | Invoked by `setup_deploy.sh`. Runs Django commands: `migrate`, `collectstatic`, and `init_site`.                                            |
+| Script             | Purpose                                                                                                                                                                                                                             |
+|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `init_env.sh`      | One-time script to create `/var/www/sites/<project>` and scaffold a placeholder `.env` file. Must be run AFTER first deployment using `sudo`.                                                                                       |
+| `setup_deploy.sh`  | Main deployment script. Wipes project directory, clones repo, restores `.env`, installs dependencies, and optionally runs `post_deploy.sh`. Must be run under `myuser` account. The first time it is run use th `--skip-post` flag. |
+| `post_deploy.sh`   | Invoked by `setup_deploy.sh`. Runs Django commands: `migrate`, `collectstatic`, and `init_site`. Must be run under `myuser` account.                                                                                                |
+| `setup_configs.sh` | One-time script to generate and install and configure the Gunicorn and Nginx socket and service files. Must be run under `sudo`.                                                                                                    |
+| `setup_ssl.sh`     | One time script, used to install and configure a self-signed SSL certificate using Certbot. Must be run under `sudo`. Pre-requisites: domain must be registered and email must be provided.                                         |
 
 ---
 
@@ -138,8 +140,8 @@ Do not use runserver for production. This is only a brief sanity check
     - If it works, stop the server (Ctrl+C).
     - **Crucially: Remove the temporary port 8000 rule from your DO Cloud Firewall.**
 
-# Create Gunicorn and Nginx configs 
-sudo ./create_configs.sh myproject myuser
+# Setup Gunicorn and Nginx configs 
+sudo ./setup_configs.sh myproject myuser
 
 # Perform a quick test of the deployment using Gunicorn
 - Temporarily allow port 8000 in DO Cloud Firewall as and Inbound rule.
@@ -188,7 +190,53 @@ DATABASE_URL=postgres://user:password@localhost:5432/dbname
 ALLOWED_HOSTS=127.0.0.1,localhost
 ```
 
-Update values before enabling production traffic.
+Update values before running the `post_deploy.sh` script and before enabling production traffic.
+
+---
+
+### Installing and Configuring SSL
+
+Before enabling production traffic, setup and secure your domain with a self-signed SSL certificate.
+
+1. **Register a Domain**
+    - Use a provider like Namecheap, GoDaddy, Google Domains, etc.
+
+
+2. **Set DNS A Record**
+    - Go to your domain registrar’s DNS settings
+    - Create an A record:
+        - **Host**: `@`
+        - **Points to**: your Droplet's IP address
+        - **TTL**: default (e.g., 3600 seconds)
+
+
+3. **Optional:** Add a second A record:
+    - **Host**: `www`
+    - **Points to**: your Droplet's IP
+
+
+4. **Wait for DNS Propagation**
+    - Can take up to a few minutes to an hour
+    - Use tools like https://dnschecker.org to confirm your domain resolves to your Droplet
+
+
+5. **Update Nginx config (Optional)**
+    - Ensure your `server_name` line matches the domain(s):
+      ```nginx
+      server_name your_domain.com www.your_domain.com;
+      ```
+
+6. **Run the script to configure SSL**
+   ```bash
+   sudo ./setup_ssl.sh myproject your_domain.com your@email.com
+   ```
+
+7. **Verify Firewall Configuration**
+    - Ensure HTTPS (TCP port 443) is allowed in your DigitalOcean Cloud Firewall.
+
+
+8. **Test HTTPS Access**
+    - **Visit `https://your_domain.com`. You should see a lock icon and your site should load securely.
 
 ---
 
