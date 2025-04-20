@@ -15,4 +15,14 @@ uv run python manage.py collectstatic --noinput
 echo "--- Initializing Site (Custom Command) ---"
 uv run python manage.py init_site # Ensure this command is idempotent or safe to run repeatedly
 
+echo "Reloading systemd"
+sudo systemctl daemon-reload
+
+echo "Restarting Gunicorn socket and service..."
+sudo systemctl restart gunicorn-djbaseapp.socket
+sudo systemctl restart gunicorn-djbaseapp.service
+
+echo "Reloading Nginx"
+sudo nginx -t && sudo systemctl reload nginx
+
 echo "--- Deployment Script Finished ---"
