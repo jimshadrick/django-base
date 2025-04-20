@@ -29,6 +29,11 @@ production deployment.
     DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
     CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
     CONN_MAX_AGE=60
+    MAILGUN_API_KEY=changeme
+    MAILGUN_DOMAIN=sandboxid.mailgun.org
+    DEFAULT_FROM_EMAIL=admin@localhost
+    SITE_DOMAIN=mydomain.com
+    SITE_NAME=mydomain
     ```
 4. Run migrations and setup: `./post_deploy.sh`
     ```bash
@@ -64,6 +69,11 @@ production deployment.
 - `DATABASE_URL`: Full connection string for PostgreSQL.
 - `CSRF_TRUSTED_ORIGINS`: Comma-separated list of trusted domains.
 - `CONN_MAX_AGE`: DB connection max age in seconds (e.g. 60).
+- `MAILGUN_API_KEY`: API key for Mailgun.
+- `MAILGUN_DOMAIN`: Domain for Mailgun.
+- `DEFAULT_FROM_EMAIL`: Default email address.
+- `SITE_DOMAIN`: Domain for the site.
+- `SITE_NAME`: Name for the site.
 
 ---
 

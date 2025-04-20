@@ -6,6 +6,10 @@
 # 2025-04-18: Modify Nginx config to include default_server and handle server name properly.
 # 2025-04-18: Add a step to disable the default site.
 # 2025-04-18: Add a more thorough service reload and restart sequence.
+# 2025-04-20: Removed the UV_PATH from the ExecStart line to run the gunicorn binary directly.
+# 2025-04-20: Bind to my actual Unix socket file $SOCKET_PATH and not use fd://3
+# 2025-04-20: Corrected the import path to project.wsgi:application (not $PROJECT_NAME.wsgi:application)
+
 
 PROJECT_NAME=$1
 DEPLOY_USER=$2
@@ -17,7 +21,8 @@ fi
 
 APP_DIR="/var/www/sites/$PROJECT_NAME"
 SOCKET_PATH="/run/$PROJECT_NAME.sock"
-UV_PATH="/home/$DEPLOY_USER/.local/bin/uv"
+#UV_PATH="/home/$DEPLOY_USER/.local/bin/uv"
+GUNICORN_PATH="$APP_DIR/.venv/bin/gunicorn"
 
 echo "🛠️ Generating and deploying Gunicorn and Nginx configs for '$PROJECT_NAME'..."
 
@@ -53,11 +58,11 @@ User=$DEPLOY_USER
 Group=www-data
 WorkingDirectory=$APP_DIR
 EnvironmentFile=$APP_DIR/.env
-ExecStart=$UV_PATH run gunicorn \\
+ExecStart=$GUNICORN_PATH \\
           --access-logfile - \\
           --workers 3 \\
           --bind unix:$SOCKET_PATH \\
-          $PROJECT_NAME.wsgi:application
+          project.wsgi:application
 
 [Install]
 WantedBy=multi-user.target

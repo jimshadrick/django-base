@@ -23,10 +23,17 @@ fi
 
 echo "📝 Creating starter .env file at $ENV_FILE..."
 sudo tee "$ENV_FILE" > /dev/null <<EOF
-SECRET_KEY=changeme123
-DEBUG=True
-DATABASE_URL=postgres://user:password@localhost:5432/dbname
-ALLOWED_HOSTS=127.0.0.1,localhost
+DJANGO_DEBUG=True
+DJANGO_SECRET_KEY=supersecretkey
+DATABASE_URL=postgres://postgres:postgres@db:5432/mydbname
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+CONN_MAX_AGE=60
+MAILGUN_API_KEY=changeme
+MAILGUN_DOMAIN=sandboxid.mailgun.org
+DEFAULT_FROM_EMAIL=admin@localhost
+SITE_DOMAIN=mydomain.com
+SITE_NAME=mydomain
 EOF
 
 sudo chown "$DEPLOY_USER:www-data" "$ENV_FILE"
