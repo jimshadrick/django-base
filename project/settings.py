@@ -10,12 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env.str('DJANGO_SECRET_KEY')
 
-DEBUG = env.bool('DJANGO_DEBUG', default=False)
-
-if DEBUG:
-    ALLOWED_HOSTS = ['*']
-else:
-    ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
+# Development and production flag 
+DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -108,12 +104,15 @@ DATABASES = {
     }
 }
 
-# Enable Django to detect secure requests coming from behind a proxy.
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Security and Hosts
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000'])
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if not DEBUG else None  # detect SSL behind proxy
 
-# Define a list of trusted origins for CSRF protection. 
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS",
-                                default=["http://localhost:8000"])
+# SSL Settings
+SECURE_SSL_REDIRECT = env.bool('DJANGO_SECURE_SSL_REDIRECT', default=False)
+SESSION_COOKIE_SECURE = env.bool('DJANGO_SESSION_COOKIE_SECURE', default=False)
+CSRF_COOKIE_SECURE = env.bool('DJANGO_CSRF_COOKIE_SECURE', default=False)
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
