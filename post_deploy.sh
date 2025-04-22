@@ -1,6 +1,7 @@
 #!/bin/bash
 # post_deploy.sh
-# Post-deployment script for Django
+# Usage: ./.venv/bin/activate && ./post_deploy.sh
+# Description: Post-deployment script for Django
 
 set -e # Exit immediately if a command exits with a non-zero status.
 

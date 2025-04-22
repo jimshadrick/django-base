@@ -204,52 +204,6 @@ Update values before running the `post_deploy.sh` script and before enabling pro
 
 ---
 
-### Installing and Configuring SSL
-
-Before enabling production traffic, setup and secure your domain with a self-signed SSL certificate.
-
-1. **Register a Domain**
-    - Use a provider like Namecheap, GoDaddy, Google Domains, etc.
-
-
-2. **Set DNS A Record**
-    - Go to your domain registrar’s DNS settings
-    - Create an A record:
-        - **Host**: `@`
-        - **Points to**: your Droplet's IP address
-        - **TTL**: default (e.g., 3600 seconds)
-
-
-3. **Optional:** Add a second A record:
-    - **Host**: `www`
-    - **Points to**: your Droplet's IP
-
-
-4. **Wait for DNS Propagation**
-    - Can take up to a few minutes to an hour
-    - Use tools like https://dnschecker.org to confirm your domain resolves to your Droplet
-
-
-5. **Update Nginx config (Optional)**
-    - Ensure your `server_name` line matches the domain(s):
-      ```nginx
-      server_name your_domain.com www.your_domain.com;
-      ```
-
-6. **Run the script to configure SSL**
-   ```bash
-   sudo ./setup_ssl.sh myproject your_domain.com your@email.com
-   ```
-
-7. **Verify Firewall Configuration**
-    - Ensure HTTPS (TCP port 443) is allowed in your DigitalOcean Cloud Firewall.
-
-
-8. **Test HTTPS Access**
-    - **Visit `https://your_domain.com`. You should see a lock icon and your site should load securely.
-
----
-
 ## 🔗 Usage
 
 - Admin Panel: `/admin/`
@@ -264,20 +218,15 @@ Before enabling production traffic, setup and secure your domain with a self-sig
 
 ---
 
-## 🧼 To Reset/Remove a Project
+## 🧼 To Uninstall/Remove a Project
 
-On the server run the following commands:
+On the server run the following scripts (under `sudo`:
 
-```bash
-sudo systemctl stop gunicorn-myproject.socket
-sudo systemctl disable gunicorn-myproject.socket
-sudo rm /etc/systemd/system/gunicorn-myproject.*
-sudo rm /etc/nginx/sites-available/myproject
-sudo rm /etc/nginx/sites-enabled/myproject
-sudo rm -rf /var/www/sites/myproject
-sudo systemctl daemon-reload
-sudo systemctl reload nginx
-```
+| Script              | Purpose                                                                                                                                               |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `uninstall_app.sh`  | One-time script to remove the project directory and related application code as well as related Nginx and Gunicorn socket and service files and logs. |
+| `uninstall_db.sh`   | One-time script to remove the project database and user and clean up connections.                                                                     |
+| `uninstall_cert.sh` | One-time script to remove the Cloudflare origin certificate files (optional).                                                                         |
 
 ---
 

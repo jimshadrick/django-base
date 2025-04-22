@@ -1,6 +1,7 @@
 #!/bin/bash
 # setup_configs.sh
 # Usage: sudo ./setup_configs.sh <project_name> <deploy_user>
+# Description: Generates and deploys Gunicorn and Nginx configs for a Django project
 # Change Log:
 # 2025-04-18: Add [Socket] ownership parameters SocketUser & SocketGroup.
 # 2025-04-18: Modify Nginx config to include default_server and handle server name properly.
