@@ -11,7 +11,7 @@ uv run python manage.py migrate --noinput
 echo "--- Collecting Static Files ---"
 # Ensure the staticfiles directory exists if collectstatic expects it
 mkdir -p staticfiles
-uv run python manage.py collectstatic --noinput
+uv run python manage.py collectstatic --noinput --ignore="vendor/*"
 
 echo "--- Initializing Site (Custom Command) ---"
 uv run python manage.py init_site # Ensure this command is idempotent or safe to run repeatedly

@@ -36,12 +36,9 @@ uv.lock
 # But DO NOT ignore the /static/ directory itself
 # /static/
 
-# However, you might want to ignore certain files within /static/
-# For example, compiled CSS or JS if you're using a build process
-/static/*/output.css
-/static/*/*.min.css
-/static/*/*.min.js
-/static/*/*.map
+# Ignore Bootstrap minified files 
+static/vendor/bootstrap/*
+!static/vendor/bootstrap/.gitkeep
 
 # Django dump files
 *.jsonl
