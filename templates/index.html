@@ -1,9 +1,24 @@
-{% extends "allauth/layouts/entrance.html" %}
+{% extends "base.html" %}
+{% load static %}
 {% load allauth %}
 {% block head_title %}Base Project{% endblock %}
 {% block content %}
-    {% element h1 %}
-        Base Template Project
-    {% endelement %}
-    <p>Welcome to the Django base template project.</p>
+    <!-- Hero section -->
+    <div class="px-4 pt-5 my-5 text-center border-bottom">
+        <h1 class="display-4 fw-bold">Django Base Project</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Get a jump-start on building a production-ready Django project quickly. Includes a
+                some of the most commonly used packages and frameworks for things like authentication, static file
+                handling, email processing, etc. as well as optimized development and production settings. Comes
+                with a custom user model ready to go and a responsive UI built with Bootstrap. Deployment to a
+                DigitalOcean VPS using scripts is also included.
+            </p>
+        </div>
+        <div class="overflow-hidden" style="max-height: 30vh;">
+            <div class="container px-5">
+                <img src="{% static 'images/hero-screenshot.png' %}" class="img-fluid border rounded-3 shadow-lg mb-4"
+                     alt="Example image" width="700" height="500" loading="lazy">
+            </div>
+        </div>
+    </div>
 {% endblock content %}

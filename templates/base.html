@@ -20,12 +20,15 @@
               crossorigin="anonymous">
     {% endif %}
 </head>
-<body class="min-vh-100 d-flex flex-shrink-0 flex-column">
+<body class="min-vh-100 d-flex flex-shrink-0 flex-column bg-light">
 <a class="visually-hidden-focusable" href="#content">{% translate "Skip to main content" %}</a>
-<header data-bs-theme="dark">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+<header>
+    <nav class="navbar navbar-expand-lg bg-white shadow-lg border">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Django Base</a>
+            <a class="navbar-brand" href="/">
+                <img src="{% static 'images/logo.svg' %}" alt="Logo" height="30" class="d-inline-block align-text-top">
+                Django Base
+            </a>
             <button class="navbar-toggler"
                     type="button"
                     data-bs-toggle="collapse"
@@ -43,7 +46,7 @@
                         <a class="nav-link active" href="https://docs.allauth.org/">Documentation</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="https://codeberg.org/allauth/django-allauth">Repository</a>
+                        <a class="nav-link" href="https://github.com/jimshadrick/django-base">Repository</a>
                     </li>
                 </ul>
                 <div class="d-flex flex-column flex-sm-row gap-2 col-lg-3 justify-content-lg-end text-nowrap">
