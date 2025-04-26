@@ -1,0 +1,9 @@
+/* Override active pill color globally */
+.nav-pills .nav-link.active {
+    background-color: var(--bs-secondary) !important; /* Use Bootstrap's secondary color */
+    color: #fff; /* Keep text white */
+}
+
+.nav-pills .nav-link {
+    color: var(--bs-dark);
+}
