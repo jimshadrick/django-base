@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +19,7 @@
               integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
               crossorigin="anonymous">
     {% endif %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body class="min-vh-100 d-flex flex-shrink-0 flex-column bg-light">
 <a class="visually-hidden-focusable" href="#content">{% translate "Skip to main content" %}</a>
@@ -43,9 +44,6 @@
                     aria-label="Project links"
                     class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="https://docs.allauth.org/">Documentation</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="https://github.com/jimshadrick/django-base">Repository</a>
                     </li>
                 </ul>
@@ -59,7 +57,8 @@
                         {% endif %}
                         <a href="{% url 'account_logout' %}" class="btn btn-danger">{% translate "Sign Out" %}</a>
                     {% else %}
-                        <a href="{% url 'account_login' %}" class="btn btn-outline-light">{% translate "Sign In" %}</a>
+                        <a href="{% url 'account_login' %}"
+                           class="btn btn-outline-success">{% translate "Sign In" %}</a>
                         {% url 'account_signup' as signup_url_ %}
                         {% if signup_url_ %}
                             <a href="{{ signup_url_ }}" class="btn btn-success">{% translate "Sign Up" %}</a>
