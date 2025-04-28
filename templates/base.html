@@ -88,7 +88,8 @@
 {% block footer %}
     <footer class="mt-auto">
         
-        {% block footer_cta%}<!-- Call to Action Section -->
+        <!-- Call to Action Section -->
+        {% block footer_cta %}
             <section class="py-5 bg-primary bg-opacity-10">
                 <div class="container text-center">
                     <h2 class="fw-bold mb-3">Try Out the Template Today</h2>
@@ -126,11 +127,11 @@
                             <div class="col-md-3 mb-2">
                                 <h5 class="mb-3">Legal</h5>
                                 <ul class="list-unstyled">
-                                    <li class="mb-2"><a href="#" class="text-decoration-none text-body-secondary">Terms
-                                        and
+                                    <li class="mb-2"><a href="{% url 'core:terms_and_conditions' %}"
+                                                        class="text-decoration-none text-body-secondary">Terms and
                                         Conditions</a>
                                     </li>
-                                    <li class="mb-2"><a href="#"
+                                    <li class="mb-2"><a href="{% url 'core:privacy_policy' %}"
                                                         class="text-decoration-none text-body-secondary">Privacy
                                         Policy</a>
                                     </li>
