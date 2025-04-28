@@ -1,7 +1,8 @@
-# setup_deploy.sh
 #!/bin/bash
 # Usage: ./setup_deploy.sh <project_name> <deploy_user> [--skip-post]
 # Description: Creates a new project directory and performs a Django project deployment on the server
+# Change Log:
+# 2025-04-28: Add commands to restart Gunicorn workers and restart Nginx after deployment.
 
 set -e
 set -o pipefail
@@ -65,3 +66,8 @@ if [ "$SKIP_POST" != "--skip-post" ]; then
 else
   echo "⚠️ Skipping post-deployment script."
 fi
+
+# === Restart services to load new code ===
+sudo systemctl restart gunicorn-$PROJECT_NAME.service
+sudo systemctl restart gunicorn-$PROJECT_NAME.socket
+sudo systemctl restart nginx
