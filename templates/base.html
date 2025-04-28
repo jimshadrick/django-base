@@ -85,73 +85,81 @@
             integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
             crossorigin="anonymous"></script>
 {% endif %}
-<footer class="mt-auto">
-    <!-- Call to Action Section -->
-    <section class="py-5 bg-primary bg-opacity-10">
-        <div class="container text-center">
-            <h2 class="fw-bold mb-3">Join Our Community Today</h2>
-            <p class="lead mb-4">Get started with Django Base and build better web applications faster</p>
-            <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Sign Up Now</a>
-        </div>
-    </section>
-    
-    <!-- Main Footer -->
-    <div class="bg-light py-3 border-top">
-        <div class="container">
-            <!-- Primary Footer Content -->
-            <div class="row py-3">
-                <div class="col-12 col-md-3 mb-4 mb-md-0">
-                    <a class="navbar-brand d-inline-flex align-items-center mb-2" href="/">
-                        <img src="{% static 'images/logo.svg' %}" alt="Logo" height="30" class="me-2">
-                        <span class="fs-4">Django Base</span>
-                    </a>
+{% block footer %}
+    <footer class="mt-auto">
+        
+        {% block footer_cta%}<!-- Call to Action Section -->
+            <section class="py-5 bg-primary bg-opacity-10">
+                <div class="container text-center">
+                    <h2 class="fw-bold mb-3">Try Out the Template Today</h2>
+                    <p class="lead mb-4">Get started with Django Base and build better web applications faster</p>
+                    <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Sign Up Now</a>
                 </div>
-                <div class="col-12 col-md-9">
-                    <div class="row justify-content-end">
-                        <!-- About Column -->
-                        <div class="col-md-3 mb-3">
-                            <h5 class="mb-3">About</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><a href="#" class="text-decoration-none text-body-secondary">FAQ</a>
-                                </li>
-                                <li class="mb-2"><a href="#" class="text-decoration-none text-body-secondary">Documentation</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- Legal Column -->
-                        <div class="col-md-3 mb-3">
-                            <h5 class="mb-3">Legal</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><a href="#" class="text-decoration-none text-body-secondary">Terms and
-                                    Conditions</a>
-                                </li>
-                                <li class="mb-2"><a href="#"
-                                                    class="text-decoration-none text-body-secondary">Privacy Policy</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- Contact Column -->
-                        <div class="col-md-3 mb-3">
-                            <h5 class="mb-3">Contact</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <a href="mailto:support@djbase.com"
-                                       class="text-decoration-none text-body-secondary">support@djbase.com</a>
-                                </li>
-                            </ul>
+            </section>
+        {% endblock footer_cta %}
+        
+        <!-- Main Footer -->
+        <div class="bg-light py-3 border-top">
+            <div class="container">
+                <!-- Primary Footer Content -->
+                <div class="row py-2">
+                    <div class="col-12 col-md-3 mb-3 mb-md-0">
+                        <a class="navbar-brand d-inline-flex align-items-center mb-2" href="/">
+                            <img src="{% static 'images/logo.svg' %}" alt="Logo" height="30" class="me-2">
+                            <span class="fs-4">Django Base</span>
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-9">
+                        <div class="row justify-content-end">
+                            <!-- About Column -->
+                            <div class="col-md-3 mb-2">
+                                <h5 class="mb-3">About</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><a href="#"
+                                                        class="text-decoration-none text-body-secondary">FAQ</a>
+                                    </li>
+                                    <li class="mb-2"><a href="#" class="text-decoration-none text-body-secondary">Documentation</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Legal Column -->
+                            <div class="col-md-3 mb-2">
+                                <h5 class="mb-3">Legal</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><a href="#" class="text-decoration-none text-body-secondary">Terms
+                                        and
+                                        Conditions</a>
+                                    </li>
+                                    <li class="mb-2"><a href="#"
+                                                        class="text-decoration-none text-body-secondary">Privacy
+                                        Policy</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Contact Column -->
+                            <div class="col-md-3 mb-2">
+                                <h5 class="mb-3">Contact</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <a href="mailto:support@djbase.com"
+                                           class="text-decoration-none text-body-secondary">support@djbase.com</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Secondary Footer Content -->
-            <div class="row pt-4 border-top">
-                <div class="col-12 col-md-6">
-                    <small class="text-body-secondary">&copy; {% now "Y" %} Django Base. All rights reserved.</small>
+                
+                <!-- Secondary Footer Content -->
+                <div class="row pt-3 border-top">
+                    <div class="col-12 col-md-6">
+                        <small class="text-body-secondary">&copy; {% now "Y" %} Django Base. All rights
+                            reserved.</small>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
+{% endblock footer %}
 </body>
 </html>
