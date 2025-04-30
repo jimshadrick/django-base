@@ -47,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Django-allauth configurations
+# Django and allauth authentication configurations
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
     "django.contrib.auth.backends.ModelBackend",
@@ -69,6 +69,8 @@ ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'none'  # 'none' defaults to LOGIN_REDIRECT_URL
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+
+PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
 
 # Set Django's default user model
 AUTH_USER_MODEL = 'users.CustomUser'
