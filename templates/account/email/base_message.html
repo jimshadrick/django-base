@@ -1,19 +1,30 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <body style="margin: 0; padding: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8f9fa;">
 <table role="presentation" style="width: 100%; border-collapse: collapse;">
     <tr>
-        <td style="padding: 30px 0; background-color: #dbdbdb;">
+        <td style="padding: 30px 0; background-color: #f0f2f5;">
             <table role="presentation"
-                   style="width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 6px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);">
+                   style="width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);">
+                <!-- Header -->
+                {% blocktranslate with site_name=current_site.name %}
+                    <tr>
+                        <td style="background-color: #0d6efd; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+                            <h1 style="color: #ffffff; font-size: 24px; margin: 0;">{{ site_name }}</h1>
+                        </td>
+                    </tr>
+                {% endblocktranslate %}
+                
+                <!-- Content -->
                 <tr>
-                    <td style="padding: 20px;">
+                    <td style="padding: 30px 20px;">
                         {% block content %}{% endblock %}
                         
                         {% if action_url %}
-                            <table role="presentation" style="margin: 30px 0;">
+                            <table role="presentation" style="margin: 30px 0; width: 100%;">
                                 <tr>
-                                    <td>
+                                    <td style="text-align: center;">
                                         <a href="{{ action_url }}"
                                            style="background-color: #0d6efd; color: #ffffff; padding: 12px 24px; 
                                            text-decoration: none; border-radius: 4px; display: inline-block; 
@@ -27,6 +38,33 @@
                         <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
                             {% block footer %}{% endblock %}
                         </p>
+                    </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                    <td style="background-color: #f8f9fa; padding: 20px; border-radius: 0 0 8px 8px; border-top: 1px solid #dee2e6;">
+                        <table role="presentation" style="width: 100%;">
+                            <tr>
+                                <td style="text-align: center;">
+                                    {% blocktranslate with site_name=current_site.name %}
+                                        <p style="margin: 0 0 10px 0; color: #212529; font-size: 14px;">
+                                            About {{ site_name }}
+                                        </p>
+                                    {% endblocktranslate %}
+                                    <p style="margin: 0 0 15px 0; color: #6c757d; font-size: 12px;">
+                                        A production-ready template to get a jump start on your next Django project.
+                                    </p>
+                                    {% blocktranslate with site_domain=current_site.domain %}
+                                        <p style="margin: 0; color: #6c757d; font-size: 12px;">
+                                            Need help? Contact our support team at <a
+                                                href="mailto:support@{{ site_domain }}"
+                                                style="color: #0d6efd; text-decoration: none;">support@{{ site_domain }}</a>
+                                        </p>
+                                    {% endblocktranslate %}
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </table>
