@@ -1,0 +1,10 @@
+{% extends "account/email/base_notification.html" %}
+{% load i18n %}
+
+{% block notification_message %}
+    <p style="color: #212529; font-size: 16px; line-height: 1.5; margin: 0;">
+        {% blocktrans %}
+            Your email has been changed from <strong>{{ from_email }}</strong> to <strong>{{ to_email }}</strong>.
+        {% endblocktrans %}
+    </p>
+{% endblock notification_message %}

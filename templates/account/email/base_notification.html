@@ -1,0 +1,57 @@
+{% extends "account/email/base_message.html" %}
+{% load account %}
+{% load i18n %}
+
+{% block content %}
+    <h1 style="color: #212529; font-size: 24px; font-weight: bold; margin-bottom: 20px; text-align: center;">
+        {% translate "Security Notification" %}
+    </h1>
+    
+    {% autoescape off %}
+        <p style="color: #212529; font-size: 16px; line-height: 1.5; margin-bottom: 16px;">
+            {% blocktrans %}
+                You are receiving this mail because the following change was made to your account:
+            {% endblocktrans %}
+        </p>
+        
+        <div style="background-color: #f8f9fa; border-left: 4px solid #0d6efd; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            {% block notification_message %}
+            {% endblock notification_message %}
+        </div>
+        
+        <div style="background-color: #fff8dc; border: 1px solid #ffd700; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="color: #212529; font-size: 16px; line-height: 1.5; margin-bottom: 16px;">
+                {% blocktrans %}
+                    If you do not recognize this change then please take proper security precautions immediately.
+                    The change to your account originates from:
+                {% endblocktrans %}
+            </p>
+            
+            <table style="width: 100%; margin: 10px 0; color: #666;">
+                <tr>
+                    <td style="padding: 8px 0; color: #212529;">
+                        <strong>{% translate "IP Address" %}:</strong> {{ ip }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #212529;">
+                        <strong>{% translate "Browser" %}:</strong> {{ user_agent }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #212529;">
+                        <strong>{% translate "Date" %}:</strong> {{ timestamp }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endautoescape %}
+{% endblock %}
+
+{% block footer %}
+    <p style="color: #6c757d; font-size: 14px; margin-top: 30px;">
+        {% blocktranslate %}
+            If this was you, you can safely ignore this email.
+        {% endblocktranslate %}
+    </p>
+{% endblock %}
