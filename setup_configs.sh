@@ -10,7 +10,7 @@
 # 2025-04-20: Removed the UV_PATH from the ExecStart line to run the gunicorn binary directly.
 # 2025-04-20: Bind to my actual Unix socket file $SOCKET_PATH and not use fd://3
 # 2025-04-20: Corrected the import path to project.wsgi:application (not $PROJECT_NAME.wsgi:application)
-
+# 2025-05-01: Updated Nginx configuration script for proper path to /staticfiles directory.
 
 PROJECT_NAME=$1
 DEPLOY_USER=$2
@@ -85,7 +85,7 @@ server {
     location = /robots.txt  { access_log off; log_not_found off; }
 
     location /static/ {
-        root $APP_DIR;
+        alias $APP_DIR/staticfiles/;
         access_log off;
         expires 30d;
     }
