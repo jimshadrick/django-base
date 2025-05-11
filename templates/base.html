@@ -49,7 +49,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarText">
                 <div class="navbar-nav d-flex flex-column flex-sm-row gap-2 text-nowrap ms-auto">
-                    <a class="nav-link" href="{% url 'core:home' %}">Home</a>
+                    <!-- Unauthenticated links go here -->
+                    <a class="nav-link" href="{% url 'core:home' %}"></a>
+                    
                     {% if user.is_authenticated %}
                         {% url 'account_email' as email_url_ %}
                         {% url 'socialaccount_connections' as socialaccount_url_ %}
@@ -57,12 +59,15 @@
                             <a href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}"
                                class="nav-link">Manage Account</a>
                         {% endif %}
-                        <a href="{% url 'account_logout' %}" class="nav-link">{% translate "Sign Out" %}</a>
+                        <a href="{% url 'account_logout' %}" class="btn btn-outline-dark"
+                           role="button">{% translate "Sign Out" %}</a>
                     {% else %}
-                        <a href="{% url 'account_login' %}" class="nav-link">{% translate "Sign In" %}</a>
+                        <a href="{% url 'account_login' %}"
+                           class="btn btn-outline-primary" role="button">{% translate "Sign In" %}</a>
                         {% url 'account_signup' as signup_url_ %}
                         {% if signup_url_ %}
-                            <a href="{{ signup_url_ }}" class="nav-link">{% translate "Sign Up" %}</a>
+                            <a href="{{ signup_url_ }}" class="btn btn-primary"
+                               role="button">{% translate "Sign Up" %}</a>
                         {% endif %}
                     {% endif %}
                 </div>
