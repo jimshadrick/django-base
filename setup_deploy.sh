@@ -50,7 +50,12 @@ git clone "$REPO_URL" .
 if [ -f "$TEMP_ENV_BACKUP" ]; then
   echo "🔄 Restoring .env.prod file..."
   mv "$TEMP_ENV_BACKUP" .env.prod
+  # Create symlink so Gunicorn can find the environment file
+  ln -sf .env.prod .env
+else
+  echo "⚠️ No .env.prod backup found - you may need to create environment files"
 fi
+
 
 # === Sync and activate environment ===
 echo "📦 Installing dependencies with uv..."
