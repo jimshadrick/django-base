@@ -27,11 +27,11 @@ sudo chmod -R 755 "$APP_DIR"
 
 cd "$APP_DIR"
 
-# === Backup .env file before wiping directory ===
-ENV_FILE="$APP_DIR/.env"
-if [ -f .env ]; then
-  echo "🔐 Backing up .env file temporarily..."
-  cp .env "$TEMP_ENV_BACKUP"
+# === Backup .env.prod file before wiping directory ===
+ENV_FILE="$APP_DIR/.env.prod"
+if [ -f .env.prod ]; then
+  echo "🔐 Backing up .env.prod file temporarily..."
+  cp .env.prod "$TEMP_ENV_BACKUP"
 fi
 
 # === Remove old virtual environment and contents ===
@@ -45,10 +45,10 @@ find . -mindepth 1 ! -name "$(basename "$TEMP_ENV_BACKUP")" -exec rm -rf {} +
 echo "📦 Cloning repository..."
 git clone "$REPO_URL" .
 
-# === Restore .env ===
+# === Restore .env.prod ===
 if [ -f "$TEMP_ENV_BACKUP" ]; then
-  echo "🔄 Restoring .env file..."
-  mv "$TEMP_ENV_BACKUP" .env
+  echo "🔄 Restoring .env.prod file..."
+  mv "$TEMP_ENV_BACKUP" .env.prod
 fi
 
 # === Sync and activate environment ===

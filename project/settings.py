@@ -1,9 +1,21 @@
+import os
 from pathlib import Path
 
 from environs import Env
 
 env = Env()
 env.read_env()
+
+# Determine which environment file to load
+django_env = os.environ.get('DJANGO_ENV', 'dev')
+env_file = f'.env.{django_env}'
+
+# Load the specific environment file or fail
+if Path(env_file).exists():
+    env.read_env(env_file)
+    print(f"Loaded environment from {env_file}")
+else:
+    raise FileNotFoundError(f"Environment file '{env_file}' not found. Please ensure it exists.")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

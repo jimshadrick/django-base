@@ -59,6 +59,7 @@ User=$DEPLOY_USER
 Group=www-data
 WorkingDirectory=$APP_DIR
 EnvironmentFile=$APP_DIR/.env
+Environment=DJANGO_ENV=prod
 ExecStart=$GUNICORN_PATH \\
           --access-logfile - \\
           --workers 3 \\
