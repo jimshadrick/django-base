@@ -31,7 +31,7 @@ echo "🛠️ Generating and deploying Gunicorn and Nginx configs for '$PROJECT_
 
 # === Ensure DEPLOY_USER has access to project files ===
 sudo chown -R $DEPLOY_USER:www-data "$APP_DIR"
-sudo chmod 640 "$APP_DIR/.env"
+sudo chmod 640 "$APP_DIR/.env.prod"
 sudo chmod 755 "$APP_DIR"
 
 # === Gunicorn socket ===

@@ -5,6 +5,9 @@
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
+# Set Django environment for production
+export DJANGO_ENV=prod
+
 echo "--- Running Database Migrations ---"
 uv run python manage.py migrate --noinput
 
