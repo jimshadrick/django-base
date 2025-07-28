@@ -11,6 +11,8 @@
 # 2025-04-20: Bind to my actual Unix socket file $SOCKET_PATH and not use fd://3
 # 2025-04-20: Corrected the import path to project.wsgi:application (not $PROJECT_NAME.wsgi:application)
 # 2025-05-01: Updated Nginx configuration script for proper path to /staticfiles directory.
+# 2025-07-28: Modified Gunicorn service to use environment variable to use .env.prod 
+
 
 PROJECT_NAME=$1
 DEPLOY_USER=$2

@@ -3,6 +3,7 @@
 # Description: Creates a new project directory and performs a Django project deployment on the server
 # Change Log:
 # 2025-04-28: Add commands to restart Gunicorn workers and restart Nginx after deployment.
+# 2025-07-28: Modified backup and restore of .env to use .env.prod 
 
 set -e
 set -o pipefail
