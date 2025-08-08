@@ -8,8 +8,7 @@ class CustomUserCreationForm(UserCreationForm):
     Defines a custom user creation form that inherits 
     from Django's built-in `UserCreationForm`. The form 
     is associated with the `CustomUser` model and includes 
-    all the fields from the original `UserCreationForm` 
-    plus an additional field called `is_email_confirmed`.
+    all the fields from the original `UserCreationForm`.
     """
 
     class Meta(UserCreationForm.Meta):

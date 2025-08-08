@@ -1,9 +1,11 @@
 #!/bin/bash
+# setup_deploy.sh
 # Usage: ./setup_deploy.sh <project_name> <deploy_user> [--skip-post]
 # Description: Creates a new project directory and performs a Django project deployment on the server
 # Change Log:
 # 2025-04-28: Add commands to restart Gunicorn workers and restart Nginx after deployment.
 # 2025-07-28: Modified backup and restore of .env to use .env.prod 
+# 2025-08-06: Parameterized project name and updated call to post_deploy script accordingly.
 
 set -e
 set -o pipefail
@@ -68,7 +70,7 @@ source .venv/bin/activate
 # === Post deployment script ===
 if [ "$SKIP_POST" != "--skip-post" ]; then
   echo "🚀 Running post-deployment script..."
-  ./post_deploy.sh
+  ./post_deploy.sh "$PROJECT_NAME"
 else
   echo "⚠️ Skipping post-deployment script."
 fi

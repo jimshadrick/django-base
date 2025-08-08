@@ -1,27 +1,28 @@
-# Django Base Project Example
+# Django Base Project Template
 
 A sample base template that can be used for a new Django project, with support for local development and VPS-based
 production deployment.
 
 ---
 
-## 🗂 Project Structure
+## Project Structure
 
 - `project/`: Contains the main Django project configuration.
 - `core/`: Contains the core application models and logic.
-- `accounts/`: App for user account management and password changes.
+- `users/`: App for user account management and password changes.
 - `manage.py`: Django management script for running commands.
 - `init_env.sh`: One-time script to scaffold the .env file and prepare the project directory.
 - `setup_deploy.sh`: Reproducible deployment script for DigitalOcean VPS.
-- `post_deploy.sh`: Run after deploy to apply migrations, collect static files, etc.
+- `post_deploy.sh`: Post-deployment script to apply migrations, collect static files, etc.
 
 ---
 
-## ⚙️ Local Development Setup
+## Local Development Setup
 
 1. Clone the repository.
 2. Install the necessary dependencies using `uv sync`
-3. Create and update your `.env` file with the correct database credentials:
+3. Create the database `djbasedb` on your PostgreSQL server.
+3. Create and update your `.env.dev` file with the correct database credentials (example below):
     ```env
     DJANGO_DEBUG=True
     DJANGO_SECRET_KEY=supersecretkey
@@ -29,6 +30,7 @@ production deployment.
     DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
     CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
     CONN_MAX_AGE=60
+    EMAIL_BACKEND=anymail.backends.mailgun.EmailBackend OR leave blank (Django console.EmailBackend)
     MAILGUN_API_KEY=changeme
     MAILGUN_DOMAIN=sandboxid.mailgun.org
     DEFAULT_FROM_EMAIL=admin@localhost
@@ -50,18 +52,21 @@ production deployment.
 
 ---
 
-## 📦 Package Dependencies
+## Package Dependencies
 
+- `python = >=3.13`
 - `django>=5.1.7`
 - `environs[django]>=14.1.1`
 - `gunicorn>=23.0.0`
 - `psycopg[binary]>=3.2.6`
 - `whitenoise>=6.9.0`
 - `django-allauth[socialaccount]>=65.7.0`
+- `django-anymail[mailgun]>=13.0`
+- `django-debug-toolbar>=5.1.0`
 
 ---
 
-### 🔐 Environment Configuration
+## Environment Configuration
 
 - `DJANGO_SECRET_KEY`: Secret key for the Django project.
 - `DJANGO_ALLOWED_HOSTS`: Comma-separated list of allowed hosts.
@@ -69,6 +74,7 @@ production deployment.
 - `DATABASE_URL`: Full connection string for PostgreSQL.
 - `CSRF_TRUSTED_ORIGINS`: Comma-separated list of trusted domains.
 - `CONN_MAX_AGE`: DB connection max age in seconds (e.g. 60).
+- `EMAIL_BACKEND`: Specify either the `anymail.backends.mailgun.EmailBackend` for prod or leave blank
 - `MAILGUN_API_KEY`: API key for Mailgun.
 - `MAILGUN_DOMAIN`: Domain for Mailgun.
 - `DEFAULT_FROM_EMAIL`: Default email address.
@@ -77,14 +83,14 @@ production deployment.
 
 ---
 
-## 🚀 Production Deployment (DigitalOcean VPS)
+## Production Deployment (DigitalOcean VPS)
 
 This app contains scripts to deploy the project to a VPS manually using Bash scripts. This allows you to manage
 deployments without requiring CI/CD.
 
-### 🔧 Prerequisites
+### Prerequisites for Production
 
-- VPS provisioned (e.g., DigitalOcean droplet)
+- VPS provisioned (e.g., DigitalOcean droplet or another VPS provider)
 - Non-root user (e.g., `myuser`) configured with sudo access
 - SSH access to the VPS
 - VPS updated and system packages installed (
@@ -96,7 +102,7 @@ deployments without requiring CI/CD.
 
 ---
 
-### 📂 Scripts for VPS Deployment (Located in project root)
+### Scripts for VPS Deployment (Located in project root)
 
 | Script             | Purpose                                                                                                                                                                                                                             |
 |--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -106,119 +112,51 @@ deployments without requiring CI/CD.
 | `setup_configs.sh` | One-time script to generate and install and configure the Gunicorn and Nginx socket and service files. Must be run under `sudo`.                                                                                                    |
 | `setup_ssl.sh`     | One time script, used to install and configure a self-signed SSL certificate using Certbot. Must be run under `sudo`. Pre-requisites: domain must be registered and email must be provided.                                         |
 
----
+### Deployment steps:
 
-### 🧪 First-Time Deployment (per app)
+1. SSH into your server `ssh myuser@your-server-ip` using the non-root user `myuser` created above.
+2. Copy the `init_env.sh`, `setup_deploy.sh` and `setup_configs.sh` scripts to `/opt/scripts`.
 
-```bash
-# SSH into your server
-ssh myuser@your-server-ip
+#### _Initial Deployment Only_
 
-# Create the scripts directory if it doesn't exist
-sudo mkdir -p /opt/scripts
-sudo chown $USER:www-data /opt/scripts  # optional: let your user manage it
-
-# On your local machine - copy the following scripts to the server
-scp init_env.sh myuser@your-server:/opt/scripts/init_env.sh
-scp init_env.sh myuser@your-server:/opt/scripts/setup_deploy.sh
-
-# Make the scripts executable
-sudo chmod +x /opt/scripts/init_env.sh
-sudo chmod +x /opt/scripts/setup_deploy.sh
-
-# Run the deployment script as the NON-ROOT user with the optional `--skip-post` flag
-/opt/scripts/setup_deploy.sh myproject myuser --skip-post
-
-# Run one-time initialization
-sudo /opt/scripts/init_env.sh myproject myuser
-
-# Edit the generated .env with real values
-sudo nano /var/www/sites/myproject/.env
-
-# Activate the virtual environment
-cd /var/www/sites/myproject
-source venv/bin/activate  
-
-# Run the post-deployment script as the NON-ROOT user
-./post_deploy.sh
-
-# Perform a quick test of the deployment using the Django development server (optional)
-Do not use runserver for production. This is only a brief sanity check
-    - Temporarily allow port 8000 in DO Cloud Firewall as and Inbound rule.
-    - Run: uv run python manage.py runserver 0.0.0.0:8000`.
-    - Access: http://YOUR_DROPLET_IP:8000.
-    - If it works, stop the server (Ctrl+C).
-    - **Crucially: Remove the temporary port 8000 rule from your DO Cloud Firewall.**
-
-# Setup Gunicorn and Nginx configs 
-sudo ./setup_configs.sh myproject myuser
-
-# Perform a quick test of the deployment using Gunicorn
-- Temporarily allow port 8000 in DO Cloud Firewall as and Inbound rule.
-- Run: uv run gunicorn myproject.wsgi:application --bind 0.0.0.0:8000`.
-- Access: http://YOUR_DROPLET_IP:8001.
-
-# Check the status of the socket and service
-sudo systemctl status gunicorn-myproject.socket
-sudo systemctl status gunicorn-myproject.service
-
-# Restart Gunicorn manually if needed
-sudo systemctl restart gunicorn-myproject
-
-# Test that the socket is working and Nginx is reverse proxying
-curl -I http://localhost
-- Verify you are getting `HTTP/1.1 200 OK`.
-```
-
----
-
-### 🔁 Future Deployments (pull latest changes and redeploy)
+3. Run the `setup_configs.sh` script to generate and deploys Gunicorn and Nginx configs for the application.
 
 ```bash
-./setup_deploy.sh myproject
+sudo ./setup_configs.sh <project_name> <deploy_user>
 ```
 
-By default, `setup_deploy.sh` calls `post_deploy.sh`, which executes:
+4. Edit the `.env_prod` file created, replace with real values, and copy the file to the APP_DIR before running the
+   deployment script.
 
 ```bash
-uv run python manage.py migrate --noinput
-mkdir -p staticfiles
-uv run python manage.py collectstatic --noinput
-uv run python manage.py init_site
+cp /opt/scripts/.env.prod /var/www/sites/myproject/
 ```
 
----
+#### _Future Deployments (pull latest changes and redeploy)_
 
-### 🔐 .env Creation Logic
+5. Run the `setup_deploy`
 
-The `init_env.sh` script will generate a default `.env` file like this if none exists:
-
-```
-SECRET_KEY=changeme123
-DEBUG=True
-DATABASE_URL=postgres://user:password@localhost:5432/dbname
-ALLOWED_HOSTS=127.0.0.1,localhost
+```bash
+./setup_deploy.sh <project_name>
 ```
 
-Update values before running the `post_deploy.sh` script and before enabling production traffic.
+By default, `setup_deploy.sh` calls `post_deploy.sh` to run post deployment tasks (migrations, static files, etc.)
 
----
-
-## 🔗 Usage
+## Usage
 
 - Admin Panel: `/admin/`
 - Home Page - Sign Up and Sign In buttons
 
 ---
 
-## 🔒 Security & Configuration
+## Security & Configuration
 
 - `SECURE_PROXY_SSL_HEADER`: Required if using SSL with Nginx
 - Uses `django-allauth` for authentication using email address with verification
 
 ---
 
-## 🧼 To Uninstall/Remove a Project
+## To Uninstall/Remove a Project
 
 On the server run the following scripts (under `sudo`:
 
@@ -230,6 +168,32 @@ On the server run the following scripts (under `sudo`:
 
 ---
 
-## 📄 License
+## Template Change Log
+
+0.1.0 - Initial template structure
+0.2.0 - Add deployment scripts
+0.3.0 - Improve authentication setup and formatted templates
+0.4.0 - Add email configuration with AnyMail and Mailgun
+0.5.0 - Polish deployment process
+0.5.1 - Fixed hardcoded ref in scripts, added env variable validation and comments
+
+### v0.5.1 (Current Template Version)
+
+- ✅ Django 5.1.7 with modern configuration
+- ✅ User authentication and customized email templates using django-allauth
+- ✅ VPS deployment scripts tested
+- ✅ PostgreSQL integration working
+- 🚧 SSL setup needs more testing
+- 🚧 Email configuration could be simplified
+
+### Template Roadmap
+
+- [ ] Automatic logout for signed-in users after specified period
+- [ ] Implement time zones tracking for users
+- [ ] Add automated testing setup
+
+---
+
+## License
 
 This project is licensed under the [MIT License](LICENSE).

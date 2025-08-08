@@ -14,7 +14,7 @@ if [ -z "$PROJECT_NAME" ] || [ -z "$DEPLOY_USER" ]; then
 fi
 
 APP_DIR="/var/www/sites/$PROJECT_NAME"
-ENV_FILE="$APP_DIR/.env"
+ENV_FILE="$APP_DIR/.env.prod"
 
 if [ -f "$ENV_FILE" ]; then
   echo "⚠️  .env already exists at $ENV_FILE"
@@ -25,10 +25,11 @@ echo "📝 Creating starter .env file at $ENV_FILE..."
 sudo tee "$ENV_FILE" > /dev/null <<EOF
 DJANGO_DEBUG=True
 DJANGO_SECRET_KEY=supersecretkey
-DATABASE_URL=postgres://postgres:postgres@db:5432/mydbname
+DATABASE_URL=postgres://djdbuser:password_changeme@db:5432/mydbname
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
 CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
 CONN_MAX_AGE=60
+EMAIL_BACKEND=anymail.backends.mailgun.EmailBackend
 MAILGUN_API_KEY=changeme
 MAILGUN_DOMAIN=sandboxid.mailgun.org
 DEFAULT_FROM_EMAIL=admin@localhost
@@ -39,4 +40,4 @@ EOF
 sudo chown "$DEPLOY_USER:www-data" "$ENV_FILE"
 sudo chmod 640 "$ENV_FILE"
 
-echo "✅ .env created. Please edit it with real values before running setup_deploy.sh"
+echo "✅ .env created. Please edit it and replace with real values, and copy to APP_DIR before running setup_deploy.sh"

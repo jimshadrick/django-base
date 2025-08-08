@@ -20,6 +20,8 @@ else:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+if not env.str('DJANGO_SECRET_KEY', default=None):
+    raise ValueError("DJANGO_SECRET_KEY environment variable is required")
 SECRET_KEY = env.str('DJANGO_SECRET_KEY')
 
 # Development and production flag 
@@ -108,7 +110,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-# Postgres settings (connection, data integrity & connection handling)p
+# Postgres settings (connection, data integrity & connection handling)
 if not env.str('DATABASE_URL', default=None):
     raise ValueError("DATABASE_URL environment variable is required")
 DATABASES = {
@@ -121,6 +123,10 @@ DATABASES = {
 
 # Security and Hosts
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+if not DEBUG:
+    if not ALLOWED_HOSTS or ALLOWED_HOSTS == ['localhost', '127.0.0.1']:
+        raise ValueError("DJANGO_ALLOWED_HOSTS must be properly configured for production")
+
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['http://localhost:8000'])
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if not DEBUG else None  # detect SSL behind proxy
 
@@ -201,14 +207,24 @@ INTERNAL_IPS = [
 ]
 SHOW_TOOLBAR_CALLBACK = lambda request: DEBUG
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for development
+# Email backend configuration
+EMAIL_BACKEND = env.str('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+
+# Validate email backend configuration
+if EMAIL_BACKEND == 'anymail.backends.mailgun.EmailBackend':
+    # Validate Mailgun API credentials only when using Mailgun
+    if not env.str('MAILGUN_API_KEY', default=None):
+        raise ValueError("MAILGUN_API_KEY environment variable is required when using Mailgun backend")
+    if not env.str('MAILGUN_DOMAIN', default=None):
+        raise ValueError("MAILGUN_DOMAIN environment variable is required when using Mailgun backend")
+    if not env.str('DEFAULT_FROM_EMAIL', default=None):
+        raise ValueError("DEFAULT_FROM_EMAIL environment variable is required when using Mailgun backend")
 
 # Email settings (Mailgun)
 ANYMAIL = {
     'MAILGUN_API_KEY': env.str('MAILGUN_API_KEY'),
     'MAILGUN_SENDER_DOMAIN': env.str('MAILGUN_DOMAIN'),  # e.g., sandbox123456.mailgun.org or yourdomain.com
 }
-EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
 DEFAULT_FROM_EMAIL = env.str('DEFAULT_FROM_EMAIL')
-# DEFAULT_FROM_EMAIL = f"admin@{env.str('MAILGUN_DOMAIN')}"  # For user-facing emails
-# SERVER_EMAIL = f"errors@{env.str('MAILGUN_DOMAIN')}"  # For system emails (e.g., error reports)
+# DEFAULT_FROM_EMAIL = f"admin@{env.str('MAILGUN_DOMAIN')}" # For user-facing emails
+# SERVER_EMAIL = f"errors@{env.str('MAILGUN_DOMAIN')}" # For system emails (e.g., error reports)
