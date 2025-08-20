@@ -73,6 +73,7 @@ SITE_DOMAIN = env.str('SITE_DOMAIN', "localhost:8000")
 SITE_NAME = env.str('SITE_NAME', "Local Dev")
 SITE_ID = 1  # required by django.contrib.sites
 
+# Authentication settings
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_LOGIN_METHODS = {'email'}
@@ -86,6 +87,13 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
 PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
+
+# Session settings
+SESSION_COOKIE_AGE = 86400  # 24 hours (24 * 60 * 60 seconds)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # End session on browser close
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access (XSS protection)
+SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection while allowing normal navigation
+SESSION_SAVE_EVERY_REQUEST = True  # Sliding expiration for better UX (comment out for high-traffic sites)
 
 # Set Django's default user model
 AUTH_USER_MODEL = 'users.CustomUser'
