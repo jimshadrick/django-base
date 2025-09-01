@@ -1,13 +1,13 @@
-from django.views.generic import TemplateView
+from django.template.response import TemplateResponse
 
 
-class HomeView(TemplateView):
-    template_name = "core/index.html"
+def home(request):
+    return TemplateResponse(request, "core/index.html")
 
 
-class PrivacyPolicyView(TemplateView):
-    template_name = "core/privacy_policy.html"
+def show_privacy_policy(request):
+    return TemplateResponse(request, "core/privacy_policy.html")
 
 
-class TermsAndConditionsView(TemplateView):
-    template_name = "core/terms_conditions.html"
+def show_terms_and_conditions(request):
+    return TemplateResponse(request, "core/terms_conditions.html")
