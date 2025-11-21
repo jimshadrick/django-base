@@ -1,7 +1,7 @@
-# Django Base Project Template
+# Django Base Project Template (Bootstrap)
 
 A sample base template that can be used for a new Django project, with support for local development and VPS-based
-production deployment.
+production deployment. Based on Bootstrap 5.
 
 ---
 
@@ -53,7 +53,7 @@ production deployment.
 ---
 
 ## Package Dependencies
-
+uv pkg manager:
 - `python = >=3.13`
 - `django>=5.1.7`
 - `environs[django]>=14.1.1`
@@ -63,6 +63,14 @@ production deployment.
 - `django-allauth[socialaccount]>=65.7.0`
 - `django-anymail[mailgun]>=13.0`
 - `django-debug-toolbar>=5.1.0`
+
+CDN:
+- `bootstrap.min.css=5.3.5`  
+- `bootstrap-bundle.min.js=5.3.5`
+
+Minified files (for development only)
+- `/static/css/vendor/bootstrap.min.css`
+- `/static/css/vendor/bootstrap-bundle.min.js`
 
 ---
 
