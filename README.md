@@ -1,7 +1,7 @@
 # Django Base Project Template (Bootstrap)
 
 A sample base template that can be used for a new Django project, with support for local development and VPS-based
-production deployment. Based on Bootstrap 5.
+production deployment.
 
 ---
 
