@@ -351,6 +351,97 @@ Add a responsive two-column section:
 This project sets up a pragmatic, responsive baseline with Bootstrap 5. Reuse the structure, rely on utilities, and
 layer in components as your pages grow.
 
+---
+
+### 14) Bootstrap 5.3.x Migration: Flexbox Layout Changes
+
+**Context**: When upgrading from Bootstrap 5.2.x to 5.3.0+, certain flexbox utility combinations that worked reliably
+for viewport-based layouts became problematic due to CSS variable implementation changes.
+
+#### The Problem Pattern (Pre-5.3.0)
+
+This combination worked reliably in Bootstrap 5.2.x and earlier:
+
+```html
+<!-- This combination became problematic in 5.3.0+ -->
+<div class="flex-grow-1 bg-light d-flex flex-column justify-content-center">
+    <div class="flex-grow-0 flex-shrink-0 container">
+        <!-- content -->
+    </div>
+</div>
+```
+
+**Why it broke**: Bootstrap 5.3.0 introduced CSS variables for color utilities and refined the cascade behavior, making
+the interaction between `flex-grow-1`, `flex-column`, and `justify-content-center` unreliable for viewport-height
+calculations.
+
+#### The Modern Solution (5.3.0+)
+
+Replace the problematic pattern with this more reliable approach:
+
+```html
+<!-- RECOMMENDED: Bootstrap 5.3.0+ compatible -->
+<div class="min-vh-100 bg-light d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4">
+                <!-- content -->
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+#### Key Changes Explained
+
+1. **`min-vh-100`** instead of `flex-grow-1`
+
+    - Explicitly sets minimum viewport height
+    - More reliable than flex-grow calculations
+    - Works consistently across different parent containers
+2. **`d-flex align-items-center`** instead of `flex-column justify-content-center`
+
+    - Direct vertical centering approach
+    - Fewer nested flex contexts to break
+    - Simpler CSS cascade
+3. **Simplified container structure**
+
+    - Removed nested flex containers (`flex-grow-0 flex-shrink-0`)
+    - Cleaner, more predictable layout hierarchy
+
+#### Real-World Application
+
+This pattern is used in the project's authentication templates:
+
+- (sign in/up pages) `templates/allauth/layouts/entrance.html`
+- (account management) `templates/allauth/layouts/manage.html`
+
+Both templates use the modern pattern to achieve perfect vertical centering while maintaining responsive design.
+
+#### Migration Checklist
+
+When upgrading to Bootstrap 5.3.0+, look for these patterns in your codebase:
+
+- `flex-grow-1` combined with `justify-content-center`
+- Nested `flex-grow-0 flex-shrink-0` containers
+- Viewport-height layouts that stopped centering properly
+- Authentication/modal layouts using the old flexbox pattern
+
+#### Additional Benefits
+
+The modern approach provides:
+
+- **Better mobile experience**: More predictable behavior on iOS Safari and mobile Chrome
+- **Improved accessibility**: Simpler DOM structure for screen readers
+- **Future-proof**: Aligns with CSS Grid and modern layout practices
+- **Performance**: Fewer CSS calculations for the browser
+
+#### Footer Behavior Note
+
+**Trade-off**: The `min-vh-100` approach pushes footers below the viewport on short pages. This is actually the
+preferred modern UX pattern for focused interaction pages (authentication, account management) as it reduces visual
+distractions and follows industry standards (Google, GitHub, Stripe, etc.).
+
 ### Best Practices
 
 #### Container Usage

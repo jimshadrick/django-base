@@ -53,7 +53,9 @@ production deployment.
 ---
 
 ## Package Dependencies
+
 uv pkg manager:
+
 - `python = >=3.13`
 - `django>=5.1.7`
 - `environs[django]>=14.1.1`
@@ -65,10 +67,12 @@ uv pkg manager:
 - `django-debug-toolbar>=5.1.0`
 
 CDN:
-- `bootstrap.min.css=5.3.5`  
+
+- `bootstrap.min.css=5.3.5`
 - `bootstrap-bundle.min.js=5.3.5`
 
 Minified files (for development only)
+
 - `/static/css/vendor/bootstrap.min.css`
 - `/static/css/vendor/bootstrap-bundle.min.js`
 
@@ -142,10 +146,13 @@ cp /opt/scripts/.env.prod /var/www/sites/myproject/
 
 #### _Future Deployments (pull latest changes and redeploy)_
 
-5. Run the `setup_deploy`
+5. Run the `setup_deploy.sh` script to pull latest changes and redeploy the application.
+   A copy of this script is located in `/opt/scripts`.
 
 ```bash
-./setup_deploy.sh <project_name>
+cd /opt/scripts
+./setup_deploy.sh <project_name> <deploy_user>
+# Example: ./setup_deploy.sh djbaseapp jims
 ```
 
 By default, `setup_deploy.sh` calls `post_deploy.sh` to run post deployment tasks (migrations, static files, etc.)
