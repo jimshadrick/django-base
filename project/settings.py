@@ -6,7 +6,7 @@ from environs import Env
 env = Env()
 env.read_env()
 
-# Determine which environment file to load
+# Determine which environment file to load (default 'dev')
 django_env = os.environ.get('DJANGO_ENV', 'dev')
 env_file = f'.env.{django_env}'
 

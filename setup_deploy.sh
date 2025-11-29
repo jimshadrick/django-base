@@ -21,7 +21,7 @@ fi
 
 APP_DIR="/var/www/sites/$PROJECT_NAME"
 TEMP_ENV_BACKUP="/tmp/project_env_backup_$PROJECT_NAME"
-REPO_URL="https://github.com/jimshadrick/django-bootstrap.git"
+REPO_URL="https://github.com/jimshadrick/django-base.git"
 
 echo "📁 Ensuring project directory exists and is owned by $DEPLOY_USER & www-data group ..."
 sudo mkdir -p "$APP_DIR"
