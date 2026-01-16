@@ -1,18 +1,16 @@
 [project]
 name = "django-base"
-version = "0.5.1"
+version = "0.6.0"
 description = "Base Django project template"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "django>=5.1.7",
+    "django>=6.0.1",
     "django-allauth[socialaccount]>=65.7.0",
     "django-anymail[mailgun]>=13.0",
-    "django-debug-toolbar>=5.1.0",
+    "django-debug-toolbar>=5.2.0",
     "environs[django]>=14.1.1",
     "gunicorn>=23.0.0",
     "psycopg[binary]>=3.2.6",
     "whitenoise>=6.9.0",
 ]
-# uv sync --upgrade (to upgrade all dependencies and update the uv.lock file)
-# uv add --upgrade django (to upgrade just a specific package)

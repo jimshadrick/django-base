@@ -22,7 +22,7 @@ production deployment.
 1. Clone the repository.
 2. Install the necessary dependencies using `uv sync`
 3. Create the database `djbasedb` on your PostgreSQL server.
-3. Create and update your `.env.dev` file with the correct database credentials (example below):
+4. Create and update your `.env.dev` file with the correct database credentials (example below):
     ```env
     DJANGO_DEBUG=True
     DJANGO_SECRET_KEY=supersecretkey
@@ -57,14 +57,14 @@ production deployment.
 uv pkg manager:
 
 - `python = >=3.13`
-- `django>=5.1.7`
+- `django>=6.0.1`
 - `environs[django]>=14.1.1`
 - `gunicorn>=23.0.0`
 - `psycopg[binary]>=3.2.6`
 - `whitenoise>=6.9.0`
 - `django-allauth[socialaccount]>=65.7.0`
 - `django-anymail[mailgun]>=13.0`
-- `django-debug-toolbar>=5.1.0`
+- `django-debug-toolbar>=5.2.0`
 
 CDN:
 
@@ -191,19 +191,20 @@ On the server run the following scripts (under `sudo`:
 0.4.0 - Add email configuration with AnyMail and Mailgun
 0.5.0 - Polish deployment process
 0.5.1 - Fixed hardcoded ref in scripts, added env variable validation and comments
+0.6.0 - Upgrade to Django 6.0.1 and related dependencies, unit tests
 
-### v0.5.1 (Current Template Version)
+### v0.6.0 (Current Template Version)
 
-- ✅ Django 5.1.7 with modern configuration
+- ✅ Django 6.0.1 with modern configuration
 - ✅ User authentication and customized email templates using django-allauth
 - ✅ VPS deployment scripts tested
 - ✅ PostgreSQL integration working
-- 🚧 SSL setup needs more testing
-- 🚧 Email configuration could be simplified
+- ✅ Unit tests for core application and user management
+- 🚧 Considering adding support for Unpoly
 
 ### Template Roadmap
 
-- [ ] Automatic logout for signed-in users after specified period
+- [ ] Automatic logout for signed-in users after a specified period
 - [ ] Implement time zones tracking for users
 - [ ] Add automated testing setup
 
