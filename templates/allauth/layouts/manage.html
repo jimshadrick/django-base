@@ -14,6 +14,12 @@
                 {% endfor %}
             </div>
         {% endif %}
-        {% block content %}{% endblock %}
+        
+        <!-- Constrain content width on larger screens -->
+        <div class="row">
+            <div class="col-12 col-lg-8 col-xl-6">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
     </div>
 {% endblock %}

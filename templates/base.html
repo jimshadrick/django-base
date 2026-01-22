@@ -6,7 +6,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>        {% block head_title %}{% endblock %}
+    <title>
+        {% block head_title %}{% endblock %}
     </title>
     {% load static %}
     <!-- Bootstrap -->
@@ -35,7 +36,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 </head>
 
-<body class="d-flex" style="min-height: 100vh;">
+<body class="d-flex min-vh-100">
 <a class="visually-hidden-focusable" href="#content">{% translate "Skip to main content" %}</a>
 
 <!-- Sidebar -->
@@ -46,7 +47,8 @@
         <a href="/" class="d-flex align-items-center text-white text-decoration-none">
             <img src="{% static 'images/logo.svg' %}" alt="Logo" height="28" class="me-2">
             <span class="fs-5 fw-semibold">Django Base</span>
-        </a></div>    <!-- Sidebar Navigation -->
+        </a></div>
+    <!-- Sidebar Navigation -->
     <nav class="flex-grow-1 overflow-auto">
         <ul class="nav nav-pills flex-column px-2 py-3">
             {% block sidebar_nav %}
@@ -56,7 +58,8 @@
                         <i class="bi bi-house-door me-2"></i>
                         {% translate "Home" %}
                     </a>
-                </li>                <!-- Example: Add more nav items here in child templates -->
+                </li>
+                <!-- Example: Add more nav items here in child templates -->
                 {% if user.is_authenticated %}
                     <li class="nav-item mt-3">
                         <span class="nav-link text-white-50 small text-uppercase fw-semibold">{% translate "Account" %}</span>
@@ -72,6 +75,7 @@
                         </li>
                     {% endif %}
                     
+                    <!-- Allauth Manage Functions -->
                     {% url 'account_change_password' as change_password_url_ %}
                     {% if change_password_url_ %}
                         <li class="nav-item">
