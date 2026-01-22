@@ -6,8 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>
-        {% block head_title %}{% endblock %}
+    <title>        {% block head_title %}{% endblock %}
     </title>
     {% load static %}
     <!-- Bootstrap -->
@@ -28,151 +27,213 @@
     <script src="https://cdn.jsdelivr.net/npm/unpoly@3.12.1/unpoly-bootstrap5.min.js"
             integrity="sha384-qN6nKStC3+Y1RZutoecDZ+5r1VrjuqVs1lU/Z+jw0J1g4HiWZnGOmfOaB3p43V97"
             crossorigin="anonymous"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 </head>
 
-<!-- Main Content Wrapper -->
-<body class="min-vh-100 d-flex flex-column flex-shrink-0 bg-light">
+<body class="d-flex" style="min-height: 100vh;">
 <a class="visually-hidden-focusable" href="#content">{% translate "Skip to main content" %}</a>
 
-<!-- Header and Navbar -->
-<header>
-    <nav class="navbar navbar-expand-lg shadow-lg border">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <img src="{% static 'images/logo.svg' %}" alt="Logo" height="30"
-                     class="d-inline-block align-text-bottom">
-                <span class="fs-4">Django Base</span>
-            </a>
-            <button class="navbar-toggler"
+<!-- Sidebar -->
+<aside id="sidebar" class="bg-dark text-white d-flex flex-column flex-shrink-0 collapse collapse-horizontal show"
+       style="width: 260px;">
+    <!-- Sidebar Header/Brand -->
+    <div class="p-3 border-bottom border-secondary">
+        <a href="/" class="d-flex align-items-center text-white text-decoration-none">
+            <img src="{% static 'images/logo.svg' %}" alt="Logo" height="28" class="me-2">
+            <span class="fs-5 fw-semibold">Django Base</span>
+        </a></div>    <!-- Sidebar Navigation -->
+    <nav class="flex-grow-1 overflow-auto">
+        <ul class="nav nav-pills flex-column px-2 py-3">
+            {% block sidebar_nav %}
+                <li class="nav-item">
+                    <a href="{% url 'core:home' %}"
+                       class="nav-link text-white {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="bi bi-house-door me-2"></i>
+                        {% translate "Home" %}
+                    </a>
+                </li>                <!-- Example: Add more nav items here in child templates -->
+                {% if user.is_authenticated %}
+                    <li class="nav-item mt-3">
+                        <span class="nav-link text-white-50 small text-uppercase fw-semibold">{% translate "Account" %}</span>
+                    </li>
+                    {% url 'account_email' as email_url_ %}
+                    {% if email_url_ %}
+                        <li class="nav-item">
+                            <a href="{{ email_url_ }}"
+                               class="nav-link text-white {% if request.resolver_match.url_name == 'account_email' %}active{% endif %}">
+                                <i class="bi bi-envelope me-2"></i>
+                                {% translate "Email" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% url 'account_change_password' as change_password_url_ %}
+                    {% if change_password_url_ %}
+                        <li class="nav-item">
+                            <a href="{{ change_password_url_ }}"
+                               class="nav-link text-white {% if request.resolver_match.url_name == 'account_change_password' %}active{% endif %}">
+                                <i class="bi bi-key me-2"></i>
+                                {% translate "Password" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% url 'socialaccount_connections' as connections_url_ %}
+                    {% if connections_url_ %}
+                        <li class="nav-item">
+                            <a href="{{ connections_url_ }}"
+                               class="nav-link text-white {% if 'socialaccount' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="bi bi-share me-2"></i>
+                                {% translate "Social Accounts" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% url 'mfa_index' as mfa_index_url_ %}
+                    {% if mfa_index_url_ %}
+                        <li class="nav-item">
+                            <a href="{{ mfa_index_url_ }}"
+                               class="nav-link text-white {% if 'mfa' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="bi bi-shield-check me-2"></i>
+                                {% translate "Two-Factor" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% url 'usersessions_list' as usersessions_list_url_ %}
+                    {% if usersessions_list_url_ %}
+                        <li class="nav-item">
+                            <a href="{{ usersessions_list_url_ }}"
+                               class="nav-link text-white {% if 'usersessions' in request.resolver_match.url_name %}active{% endif %}">
+                                <i class="bi bi-clock-history me-2"></i>
+                                {% translate "Sessions" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endblock sidebar_nav %}
+        </ul>
+    </nav>    <!-- Sidebar Footer -->
+    <div class="border-top border-secondary p-3">
+        {% if user.is_authenticated %}
+            <!-- User Info -->
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2"
+                         style="width: 32px; height: 32px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <span class="small">{{ user.email|truncatechars:20 }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    {% url 'account_email' as email_url_ %}
+                    {% url 'socialaccount_connections' as socialaccount_url_ %}
+                    {% if email_url_ or socialaccount_url_ %}
+                        <li>
+                            <a class="dropdown-item"
+                               href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}">
+                                <i class="bi bi-person-circle me-2"></i>{% translate "Manage Account" %}
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a class="dropdown-item" href="{% url 'account_logout' %}">
+                            <i class="bi bi-box-arrow-right me-2"></i>{% translate "Sign Out" %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            <!-- Auth Buttons -->
+            <div class="d-grid gap-2">
+                <a href="{% url 'account_login' %}" class="btn btn-outline-light btn-sm">
+                    {% translate "Sign In" %}
+                </a>
+                {% url 'account_signup' as signup_url_ %}
+                {% if signup_url_ %}
+                    <a href="{{ signup_url_ }}" class="btn btn-light btn-sm">
+                        {% translate "Sign Up" %}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</aside>
+
+<!-- Main Content Wrapper -->
+<div class="d-flex flex-column flex-grow-1">
+    <!-- Top Bar -->
+    <header class="bg-white border-bottom shadow-sm">
+        <div class="d-flex align-items-center px-3 py-2">
+            <!-- Sidebar Toggle Button -->
+            <button class="btn btn-link text-dark d-lg-none me-2"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#navbarText"
-                    aria-controls="navbarText"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarText">
-                <div class="navbar-nav d-flex flex-column flex-sm-row gap-2 text-nowrap ms-auto">
-                    <!-- Unauthenticated links go here -->
-                    <a class="nav-link" href="{% url 'core:home' %}"></a>
-                    
-                    {% if user.is_authenticated %}
-                        {% url 'account_email' as email_url_ %}
-                        {% url 'socialaccount_connections' as socialaccount_url_ %}
-                        {% if email_url_ or socialaccount_url_ %}
-                            <a href="{% if email_url_ %}{{ email_url_ }}{% else %}{{ socialaccount_url_ }}{% endif %}"
-                               class="nav-link">Manage Account</a>
-                        {% endif %}
-                        <a href="{% url 'account_logout' %}" class="btn btn-outline-dark"
-                           role="button">{% translate "Sign Out" %}</a>
-                    {% else %}
-                        <a href="{% url 'account_login' %}"
-                           class="btn btn-outline-dark" role="button">{% translate "Sign In" %}</a>
-                        {% url 'account_signup' as signup_url_ %}
-                        {% if signup_url_ %}
-                            <a href="{{ signup_url_ }}" class="btn btn-dark"
-                               role="button">{% translate "Sign Up" %}</a>
-                        {% endif %}
-                    {% endif %}
-                </div>
+                    data-bs-target="#sidebar"
+                    aria-expanded="true"
+                    aria-controls="sidebar">
+                <i class="bi bi-list fs-4"></i>
+            </button>            <!-- Page Title Block -->
+            <div class="flex-grow-1">
+                <h1 class="h5 mb-0">
+                    {% block page_title %}{% block page_title_text %}{% endblock %}{% endblock %}
+                </h1>
+            </div>            <!-- Top Bar Actions -->
+            <div class="d-flex align-items-center gap-2">
+                {% block topbar_actions %}
+                    <!-- Add action buttons here in child templates -->
+                {% endblock topbar_actions %}
             </div>
         </div>
-    </nav>
-</header>
-
-<!-- Main Content -->
-<main id="content">
-    {% block body %}
-        {% block content %}¥
-        {% endblock content %}
-    {% endblock body %}
-    {% block extra_body %}
-    {% endblock extra_body %}
-</main>
-
-<!-- Footer -->
-{% block footer %}
-    <footer class="mt-auto">
-        
-        <!-- Call to Action Section -->
-        {% block footer_cta %}
-            <section class="py-5 bg-primary bg-opacity-10">
-                <div class="container text-center">
-                    <h2 class="fw-bold mb-3">Try Out the Template Today</h2>
-                    <p class="lead mb-4">Get started with Django Base and build better web applications faster</p>
-                    <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Sign Up Now</a>
-                </div>
-            </section>
-        {% endblock footer_cta %}
-        
-        <!-- Main Footer -->
-        <div class="bg-light py-3 border-top">
-            <div class="container">
-                <!-- Primary Footer Content -->
-                <div class="row py-2">
-                    <div class="col-12 col-md-3 mb-3 mb-md-0">
-                        <a class="navbar-brand d-inline-flex align-items-center mb-2" href="/">
-                            <img src="{% static 'images/logo.svg' %}" alt="Logo" height="30" class="me-2">
-                            <span class="fs-4">Django Base</span>
-                        </a>
-                    </div>
-                    <div class="col-12 col-md-9">
-                        <div class="row justify-content-end">
-                            <!-- About Column -->
-                            <div class="col-md-3 mb-2">
-                                <h5 class="mb-3">About</h5>
-                                <ul class="list-unstyled">
-                                    <li class="mb-2"><a href="#"
-                                                        class="text-decoration-none text-body-secondary">FAQ</a>
-                                    </li>
-                                    <li class="mb-2"><a href="https://github.com/jimshadrick/django-base"
-                                                        class="text-decoration-none text-body-secondary">Repository</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- Legal Column -->
-                            <div class="col-md-3 mb-2">
-                                <h5 class="mb-3">Legal</h5>
-                                <ul class="list-unstyled">
-                                    <li class="mb-2"><a href="{% url 'core:terms_and_conditions' %}"
-                                                        class="text-decoration-none text-body-secondary">Terms and
-                                        Conditions</a>
-                                    </li>
-                                    <li class="mb-2"><a href="{% url 'core:privacy_policy' %}"
-                                                        class="text-decoration-none text-body-secondary">Privacy
-                                        Policy</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- Contact Column -->
-                            <div class="col-md-3 mb-2">
-                                <h5 class="mb-3">Contact</h5>
-                                <ul class="list-unstyled">
-                                    <li class="mb-2">
-                                        <a href="mailto:support@djbase.com"
-                                           class="text-decoration-none text-body-secondary">support@djbase.com</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Secondary Footer Content -->
-                <div class="row pt-3 border-top">
-                    <div class="col-12 col-md-6">
-                        <small class="text-body-secondary">&copy; {% now "Y" %} Django Base. All rights
-                            reserved.</small>
-                    </div>
+    </header>    <!-- Main Content Area -->
+    <main id="content" class="flex-grow-1 bg-light overflow-auto">
+        <div class="container-fluid p-4">
+            {% block body %}
+                {% block content %}
+                {% endblock content %}
+            {% endblock body %}
+            {% block extra_body %}
+            {% endblock extra_body %}
+        </div>
+    </main>    <!-- Minimal Footer -->
+    {% block footer %}
+        <footer class="bg-white border-top py-2">
+            <div class="container-fluid px-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center">
+                    <small class="text-body-secondary">
+                        &copy; {% now "Y" %} Django Base. All rights reserved.
+                    </small>
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item">
+                            <a href="{% url 'core:privacy_policy' %}"
+                               class="text-decoration-none text-body-secondary small">
+                                {% translate "Privacy" %}
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="{% url 'core:terms_and_conditions' %}"
+                               class="text-decoration-none text-body-secondary small">
+                                {% translate "Terms" %}
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="mailto:support@djbase.com" class="text-decoration-none text-body-secondary small">
+                                {% translate "Support" %}
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
-    </footer>
-{% endblock footer %}
+        </footer>    {% endblock footer %}
+</div>
 </body>
 </html>
