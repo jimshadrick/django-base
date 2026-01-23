@@ -5,25 +5,34 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres
 to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## Unreleased
 
 ### Added
-- 
 
 ### Changed
 
-- Update entrance.html and manage.html templates for Bootstrap 5.3 viewport compatibility and improve layout
-  consistency.
+- Changed layout to modern sidebar navigation with compact top bar and card-based content.
 
 ### Fixed
 
-- Modified manage.html and base.html templates to correct layout issues (correct alignment with the sidebar + main
-  content).
-
-## [0.5.1] - 2025-08-20
+## [0.6.0] - 2026-01-17
 
 ### Added
 
+- Add comprehensive unit tests for `CustomUser` model, authentication, registration, and email functionality.
+- Add Unpoly CDN with Bootstrap 5 integration.
+
+### Changed
+
+- Upgrade to Django 6.0.1 and update related dependencies.
+- Simplify base.html by removing debug-specific Bootstrap links, adding Unpoly support, and standardizing to CDN
+  resources. Removed unused local Bootstrap files.
+
+## [0.5.1] - 2025-11-30
+
+### Added
+
+- Add `CHANGELOG.md` file.
 - Add authentication and session settings to `settings.py` for improved security and user experience.
 - Implement environment variable validation, parameterized post_deploy.sh script, updated documentati on.
 - Add symlink creation for `.env.prod` in deployment script
@@ -34,10 +43,15 @@ to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Update `manage.html` and `base.html` for layout enhancements.
+- Refine templates with updated Bootstrap classes and improved accessibility.
+- Replace class-based views with function-based views in `core`.
 - Refine templates with updated Bootstrap classes and improved accessibility.
 
 ### Fixed
 
+- Modified manage.html and base.html templates to correct layout issues (correct alignment with the sidebar + main
+  content).
 - Fixed repo URL in deployment script.
 - Removed 'navbar-light' (deprecated now this is the default).
 - Fixed the issue with background color when calling entrance.html and manage.html to use the same bg-light background
