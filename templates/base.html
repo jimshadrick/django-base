@@ -122,7 +122,9 @@
                 {% endif %}
             {% endblock sidebar_nav %}
         </ul>
-    </nav>    <!-- Sidebar Footer -->
+    </nav>
+    
+    <!-- Sidebar Footer -->
     <div class="border-top border-secondary p-3">
         {% if user.is_authenticated %}
             <!-- User Info -->
@@ -186,19 +188,23 @@
                     aria-expanded="true"
                     aria-controls="sidebar">
                 <i class="bi bi-list fs-4"></i>
-            </button>            <!-- Page Title Block -->
+            </button>
+            <!-- Page Title Block -->
             <div class="flex-grow-1">
                 <h1 class="h5 mb-0">
                     {% block page_title %}{% block page_title_text %}{% endblock %}{% endblock %}
                 </h1>
-            </div>            <!-- Top Bar Actions -->
+            </div>
+            <!-- Top Bar Actions -->
             <div class="d-flex align-items-center gap-2">
                 {% block topbar_actions %}
                     <!-- Add action buttons here in child templates -->
                 {% endblock topbar_actions %}
             </div>
         </div>
-    </header>    <!-- Main Content Area -->
+    </header>
+    
+    <!-- Main Content Area -->
     <main id="content" class="flex-grow-1 bg-light overflow-auto">
         <div class="container-fluid p-4">
             {% block body %}
@@ -208,7 +214,8 @@
             {% block extra_body %}
             {% endblock extra_body %}
         </div>
-    </main>    <!-- Minimal Footer -->
+    </main>
+    <!-- Minimal Footer -->
     {% block footer %}
         <footer class="bg-white border-top py-2">
             <div class="container-fluid px-4">
@@ -237,7 +244,8 @@
                     </ul>
                 </div>
             </div>
-        </footer>    {% endblock footer %}
+        </footer>
+    {% endblock footer %}
 </div>
 </body>
 </html>
