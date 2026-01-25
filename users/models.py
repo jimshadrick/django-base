@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+# TODO: Update documentation for CustomUser class
 class CustomUser(AbstractUser):
     """
     CustomUser is an extension of the default AbstractUser model tailored for additional

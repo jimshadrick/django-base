@@ -51,6 +51,7 @@ class UserProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Email Address',
                 'readonly': 'readonly',
+                'style': 'background-color: #e9ecef; cursor: not-allowed;',
             }),
             'display_name': forms.TextInput(attrs={
                 'class': 'form-control',
