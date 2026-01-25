@@ -72,8 +72,18 @@
         </div>
     </div>
     
-    <!-- Auto-update display_name based on first_name and last_name -->
     <script>
+        /**
+         * Auto-update display_name field
+         *
+         * - Auto-updates display_name on blur of first_name / last_name
+         * - Never overwrites once the user customizes display_name
+         * - Respects an existing stored display_name value
+         * - Intentionally mirrors the Django view logic:
+         *   display_name is only autopopulated when blank or unchanged
+         *
+         * This is a UI-only enhancement; the server remains the source of truth.
+         */
         document.addEventListener("DOMContentLoaded", function () {
             const firstNameInput = document.getElementById("id_first_name");
             const lastNameInput = document.getElementById("id_last_name");

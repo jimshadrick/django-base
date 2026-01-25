@@ -3,21 +3,25 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-# TODO: Update documentation for CustomUser class
 class CustomUser(AbstractUser):
     """
-    CustomUser is an extension of the default AbstractUser model tailored for additional
-    functionality and attributes relevant to a specific application.
-
-    This class introduces a custom field to track the data consent date and overrides
-    certain model attributes from the parent AbstractUser model. It also modifies the default
-    required fields for user creation and is configurable through its Meta class.
+    Custom user model extending Django's AbstractUser.
     """
 
-    display_name = models.CharField(max_length=100, blank=True, null=True)
+    display_name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text=_("Custom display name (optional)")
+    )
 
     @property
     def get_display_name(self):
+        """
+        Return the best available display name for the user.
+        
+        Falls back from display_name -> full name -> email username.
+        """
         return self.display_name or self.get_full_name() or self.email.split('@')[0]
 
     class Meta:
