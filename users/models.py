@@ -11,20 +11,13 @@ class CustomUser(AbstractUser):
     This class introduces a custom field to track the data consent date and overrides
     certain model attributes from the parent AbstractUser model. It also modifies the default
     required fields for user creation and is configurable through its Meta class.
-
-    Attributes
-    ----------
-    data_consent_date : DateField
-        Stores the date when the user provided consent for data usage.
-
-    REQUIRED_FIELDS : list of str
-        Specifies fields that are required when creating a user instance.
     """
-    data_consent_date = models.DateField(
-        null=True,
-        blank=True,
-        help_text='Date when data consent was given')
-    REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    display_name = models.CharField(max_length=100, blank=True, null=True)
+
+    @property
+    def get_display_name(self):
+        return self.display_name or self.get_full_name() or self.email.split('@')[0]
 
     class Meta:
         verbose_name = _('User')

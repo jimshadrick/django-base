@@ -1,0 +1,74 @@
+{% extends "allauth/layouts/manage.html" %}
+{% load allauth %}
+{% load i18n %}
+
+{% block head_title %}{% translate "Profile" %}{% endblock %}
+
+{% block page_title_text %}{% translate "My Profile" %}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                            {% translate "First Name" %}
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.first_name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                            {% translate "Last Name" %}
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.last_name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3 display-name-group">
+                        <label for="{{ form.display_name.id_for_label }}" class="form-label">
+                            {% translate "Display Name" %}
+                        </label>
+                        {{ form.display_name }}
+                        <div class="form-text">{{ form.fields.display_name.help_text }}</div>
+                        {% if form.display_name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.display_name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">
+                            {% translate "Email" %}
+                        </label>
+                        {{ form.email }}
+                        <div class="form-text">{{ form.email.help_text }}</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-2"></i>{% translate "Save Changes" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
