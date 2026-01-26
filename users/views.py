@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.template.response import TemplateResponse  # needed for partials
 
 from .forms import UserProfileForm
 
@@ -8,6 +9,12 @@ from .forms import UserProfileForm
 @login_required
 def user_profile(request):
     """View for users to update their profile information"""
+    context = {}
+    # Render modal partial if requested
+    if request.GET.get('partial') == 'delete-account':
+        # Returns only the HTML inside the partialdef tag
+        return TemplateResponse(request, 'users/profile.html#delete-account', context)
+
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=request.user)
 

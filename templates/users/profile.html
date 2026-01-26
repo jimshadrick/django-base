@@ -67,23 +67,46 @@
                     <button type="submit" class="btn btn-primary mt-2">
                         <i class="bi bi-save me-2"></i>{% translate "Save Changes" %}
                     </button>
+                    
+                    <!-- Delete Account Button -->
+                    <a href="?partial=delete-account"
+                       up-layer="new modal"
+                       up-size="medium"
+                       up-target="#delete-confirmation"
+                       up-history="false"
+                       class="btn btn-danger mt-2">
+                        <i class="bi bi-trash me-2"></i>{% translate "Delete Account" %}
+                    </a>
                 </form>
             </div>
         </div>
     </div>
     
+    <!-- Delete Account modal (Django partial definition) -->
+    {% partialdef delete-account %}
+        <div id="delete-confirmation">
+            <h5 class="text-danger mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>{% translate "Delete Account?" %}
+            </h5>
+            <div class="alert alert-warning mb-3">
+                <p class="mb-2"><strong>{% translate "Warning:" %}</strong></p>
+                <p class="mb-1">{% translate "By selecting confirm you will delete your account and any data you own." %}</p>
+                <p class="mb-0">{% translate "This action cannot be undone." %}</p>
+            </div>
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-2"></i>{% translate "Confirm" %}
+                </button>
+                <button type="button" class="btn btn-secondary" up-dismiss>
+                    {% translate "Cancel" %}
+                </button>
+            </form>
+        </div>
+    {% endpartialdef %}
+    
+    <!-- Auto-update display_name based on first_name and last_name -->
     <script>
-        /**
-         * Auto-update display_name field
-         *
-         * - Auto-updates display_name on blur of first_name / last_name
-         * - Never overwrites once the user customizes display_name
-         * - Respects an existing stored display_name value
-         * - Intentionally mirrors the Django view logic:
-         *   display_name is only autopopulated when blank or unchanged
-         *
-         * This is a UI-only enhancement; the server remains the source of truth.
-         */
         document.addEventListener("DOMContentLoaded", function () {
             const firstNameInput = document.getElementById("id_first_name");
             const lastNameInput = document.getElementById("id_last_name");
