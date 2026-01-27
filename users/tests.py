@@ -416,3 +416,167 @@ class UserProfileViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, 'Test')  # Unchanged
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class DeleteAccountViewTests(TestCase):
+    """
+    Test suite for delete_account view functionality, including account deletion,
+    authentication, redirects, and data cleanup.
+    """
+
+    def setUp(self):
+        """Set up test user with verified email address"""
+        self.user = CustomUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            first_name='Test',
+            last_name='User'
+        )
+        EmailAddress.objects.create(
+            user=self.user,
+            email=self.user.email,
+            primary=True,
+            verified=True
+        )
+        self.client.force_login(self.user)
+
+    def test_delete_account_requires_login(self):
+        """Test that delete_account view requires authentication"""
+        self.client.logout()
+        response = self.client.post(reverse('users:delete_account'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('accounts/login', response.url)
+
+    def test_delete_account_post_deletes_user(self):
+        """Test that POST request successfully deletes user from database"""
+        user_id = self.user.id
+        self.assertTrue(CustomUser.objects.filter(id=user_id).exists())
+
+        response = self.client.post(reverse('users:delete_account'))
+
+        # Verify user no longer exists
+        self.assertFalse(CustomUser.objects.filter(id=user_id).exists())
+
+    def test_delete_account_post_redirects_to_home(self):
+        """Test that POST request redirects to home page"""
+        response = self.client.post(reverse('users:delete_account'))
+        self.assertRedirects(response, reverse('core:home'))
+
+    def test_delete_account_logs_out_user(self):
+        """Test that user is logged out after account deletion"""
+        response = self.client.post(reverse('users:delete_account'), follow=True)
+
+        # Session should not contain user ID
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_delete_account_shows_success_message(self):
+        """Test that success message is displayed after account deletion"""
+        response = self.client.post(reverse('users:delete_account'), follow=True)
+
+        messages_list = list(response.context['messages'])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(
+            str(messages_list[0]),
+            'Your account has been deleted successfully.'
+        )
+
+    def test_delete_account_get_redirects_to_profile(self):
+        """Test that GET request is not allowed and redirects to profile"""
+        response = self.client.get(reverse('users:delete_account'))
+        self.assertRedirects(response, reverse('users:user_profile'))
+
+    def test_delete_account_removes_email_address(self):
+        """Test that associated EmailAddress records are deleted with user"""
+        email_addr_id = self.user.emailaddress_set.first().id
+
+        self.client.post(reverse('users:delete_account'))
+
+        # EmailAddress should be deleted via cascade
+        self.assertFalse(EmailAddress.objects.filter(id=email_addr_id).exists())
+
+    def test_delete_account_user_cannot_login_after_deletion(self):
+        """Test that deleted user cannot log back in"""
+        self.client.post(reverse('users:delete_account'))
+
+        # Attempt to log in with deleted user credentials
+        login_response = self.client.post(reverse('account_login'), {
+            'login': 'test@example.com',
+            'password': 'password123'
+        })
+
+        # Login should fail
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_delete_account_with_multiple_email_addresses(self):
+        """Test account deletion when user has multiple email addresses"""
+        # Add a secondary email address
+        EmailAddress.objects.create(
+            user=self.user,
+            email='secondary@example.com',
+            primary=False,
+            verified=False
+        )
+
+        user_id = self.user.id
+        email_count_before = EmailAddress.objects.filter(user=self.user).count()
+        self.assertEqual(email_count_before, 2)
+
+        self.client.post(reverse('users:delete_account'))
+
+        # User and all associated emails should be deleted
+        self.assertFalse(CustomUser.objects.filter(id=user_id).exists())
+        self.assertEqual(EmailAddress.objects.filter(user_id=user_id).count(), 0)
+
+    def test_delete_account_deletes_complete_user_record(self):
+        """Test that all user data fields are deleted, not just deactivated"""
+        user_id = self.user.id
+        username = self.user.username
+
+        self.client.post(reverse('users:delete_account'))
+
+        # Verify user record is completely gone, not just marked inactive
+        self.assertFalse(CustomUser.objects.filter(id=user_id).exists())
+        self.assertFalse(CustomUser.objects.filter(username=username).exists())
+
+    def test_delete_account_subsequent_request_requires_login(self):
+        """Test that after deletion, user must log in again for profile access"""
+        self.client.post(reverse('users:delete_account'))
+
+        # Try to access profile after deletion
+        response = self.client.get(reverse('users:user_profile'))
+
+        # Should be redirected to login (user doesn't exist)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('accounts/login', response.url)
+
+    def test_delete_account_preserves_other_users(self):
+        """Test that deleting one user doesn't affect other users"""
+        other_user = CustomUser.objects.create_user(
+            username='otheruser',
+            email='other@example.com',
+            password='password123'
+        )
+        other_user_id = other_user.id
+
+        self.client.post(reverse('users:delete_account'))
+
+        # Other user should still exist
+        self.assertTrue(CustomUser.objects.filter(id=other_user_id).exists())
+        other_user.refresh_from_db()
+        self.assertEqual(other_user.username, 'otheruser')
+
+    def test_delete_account_message_survives_logout(self):
+        """Test that success message persists through logout (encoded in response)"""
+        response = self.client.post(reverse('users:delete_account'), follow=True)
+
+        # Verify we can access the message after following the redirect
+        self.assertIn('messages', response.context)
+        messages_list = list(response.context['messages'])
+        self.assertTrue(any('deleted successfully' in str(msg) for msg in messages_list))
