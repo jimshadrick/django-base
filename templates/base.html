@@ -64,6 +64,16 @@
                     <li class="nav-item mt-3">
                         <span class="nav-link text-white-50 small text-uppercase fw-semibold">{% translate "Account" %}</span>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a href="{% url 'users:user_profile' %}"
+                           class="nav-link text-white {% if request.resolver_match.url_name == 'user_profile' %}active{% endif %}">
+                            <i class="bi bi-person-circle me-2"></i>
+                            {% translate "Profile" %}
+                        </a>
+                    </li>
+                    
+                    
                     {% url 'account_email' as email_url_ %}
                     {% if email_url_ %}
                         <li class="nav-item">
@@ -135,7 +145,7 @@
                          style="width: 32px; height: 32px;">
                         <i class="bi bi-person-fill"></i>
                     </div>
-                    <span class="small">{{ user.email|truncatechars:20 }}</span>
+                    <span class="fw-medium">{{ user.get_display_name|truncatechars:20 }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                     {% url 'account_email' as email_url_ %}
@@ -202,6 +212,19 @@
                 {% endblock topbar_actions %}
             </div>
         </div>
+        <!-- Django Messages Container (not Unpoly-managed) -->
+        <div id="django-messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center"
+                     role="alert">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span>{{ message }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- Unpoly Flash Messages Container (kept empty for Unpoly) -->
+        <div up-flashes></div>
     </header>
     
     <!-- Main Content Area -->

@@ -9,6 +9,9 @@ to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Add account deletion functionality and user profile enhancements with a confirmation modal.
+- Improved user styling in profile form and related templates with Bootstrap 5.
+
 ### Changed
 
 - Changed layout to modern sidebar navigation with compact top bar and card-based content.

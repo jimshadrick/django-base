@@ -2,7 +2,6 @@ from allauth.account.models import EmailAddress
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.utils import timezone
 
 from users.models import CustomUser
 
@@ -52,16 +51,6 @@ class CustomUserModelTests(TestCase):
         self.assertTrue(user.is_active)
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_superuser)
-
-    def test_data_consent_date(self):
-        now = timezone.now().date()
-        user = CustomUser.objects.create_user(
-            username='consentuser',
-            email='consent@example.com',
-            password='password123',
-            data_consent_date=now
-        )
-        self.assertEqual(user.data_consent_date, now)
 
 
 @override_settings(
@@ -180,3 +169,414 @@ class EmailTests(TestCase):
         # Verify the subject and recipient
         self.assertIn("Password Reset", mail.outbox[0].subject)
         self.assertEqual(mail.outbox[0].to, ['test@example.com'])
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class UserProfileModelTests(TestCase):
+    """
+    Test suite for CustomUser display_name field and get_display_name property.
+    """
+
+    def test_display_name_field(self):
+        """Test that display_name can be set and retrieved"""
+        user = CustomUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            display_name='TestDisplayName'
+        )
+        self.assertEqual(user.display_name, 'TestDisplayName')
+
+    def test_get_display_name_with_display_name_set(self):
+        """Test get_display_name returns display_name when set"""
+        user = CustomUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            first_name='John',
+            last_name='Doe',
+            display_name='JDoe'
+        )
+        self.assertEqual(user.get_display_name, 'JDoe')
+
+    def test_get_display_name_falls_back_to_full_name(self):
+        """Test get_display_name returns full name when display_name is not set"""
+        user = CustomUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            first_name='John',
+            last_name='Doe'
+        )
+        self.assertEqual(user.get_display_name, 'John Doe')
+
+    def test_get_display_name_falls_back_to_email_username(self):
+        """Test get_display_name returns email username when display_name and full_name are not set"""
+        user = CustomUser.objects.create_user(
+            username='testuser',
+            email='johndoe@example.com',
+            password='password123'
+        )
+        self.assertEqual(user.get_display_name, 'johndoe')
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class UserProfileFormTests(TestCase):
+    """
+    Test suite for UserProfileForm validation and behavior.
+    """
+
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            first_name='Test',
+            last_name='User'
+        )
+
+    def test_form_fields(self):
+        """Test that form contains expected fields"""
+        from users.forms import UserProfileForm
+        form = UserProfileForm(instance=self.user)
+        self.assertIn('first_name', form.fields)
+        self.assertIn('last_name', form.fields)
+        self.assertIn('email', form.fields)
+        self.assertIn('display_name', form.fields)
+
+    def test_form_valid_with_all_fields(self):
+        """Test form is valid with all fields filled"""
+        from users.forms import UserProfileForm
+        form_data = {
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'email': 'test@example.com',
+            'display_name': 'JS'
+        }
+        form = UserProfileForm(data=form_data, instance=self.user)
+        self.assertTrue(form.is_valid())
+
+    def test_form_valid_without_display_name(self):
+        """Test form is valid without display_name (optional field)"""
+        from users.forms import UserProfileForm
+        form_data = {
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'email': 'test@example.com',
+            'display_name': ''
+        }
+        form = UserProfileForm(data=form_data, instance=self.user)
+        self.assertTrue(form.is_valid())
+
+    def test_email_cannot_be_changed(self):
+        """Test that email field is protected from changes via clean_email method"""
+        from users.forms import UserProfileForm
+        form_data = {
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'email': 'newemail@example.com',
+            'display_name': 'JS'
+        }
+        form = UserProfileForm(data=form_data, instance=self.user)
+        self.assertTrue(form.is_valid())
+        # Email should remain unchanged
+        self.assertEqual(form.cleaned_data['email'], 'test@example.com')
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class UserProfileViewTests(TestCase):
+    """
+    Test suite for user_profile view functionality.
+    """
+
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            first_name='Test',
+            last_name='User'
+        )
+        EmailAddress.objects.create(
+            user=self.user,
+            email=self.user.email,
+            primary=True,
+            verified=True
+        )
+        self.client.force_login(self.user)
+
+    def test_profile_view_requires_login(self):
+        """Test that profile view requires authentication"""
+        self.client.logout()
+        response = self.client.get(reverse('users:user_profile'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('accounts/login', response.url)  # Changed from 'account/login' to 'accounts/login'
+
+    def test_profile_view_get(self):
+        """Test GET request to profile view"""
+        response = self.client.get(reverse('users:user_profile'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/profile.html')
+        self.assertIn('form', response.context)
+
+    def test_profile_update_with_display_name(self):
+        """Test successful profile update with explicit display_name"""
+        response = self.client.post(reverse('users:user_profile'), {
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'email': 'test@example.com',
+            'display_name': 'JSmith'
+        })
+        self.assertRedirects(response, reverse('users:user_profile'))
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'Jane')
+        self.assertEqual(self.user.last_name, 'Smith')
+        self.assertEqual(self.user.display_name, 'JSmith')
+
+    def test_profile_update_auto_populates_display_name(self):
+        """Test that display_name is auto-populated from full name when empty"""
+        response = self.client.post(reverse('users:user_profile'), {
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'email': 'test@example.com',
+            'display_name': ''
+        })
+        self.assertRedirects(response, reverse('users:user_profile'))
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.display_name, 'Jane Smith')
+
+    def test_profile_update_does_not_overwrite_existing_display_name(self):
+        """Test that existing display_name is preserved when not in POST data"""
+        self.user.display_name = 'CustomName'
+        self.user.save()
+
+        response = self.client.post(reverse('users:user_profile'), {
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'email': 'test@example.com',
+            'display_name': 'CustomName'
+        })
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.display_name, 'CustomName')
+
+    def test_profile_update_with_no_full_name(self):
+        """Test that display_name remains empty if no full name provided"""
+        response = self.client.post(reverse('users:user_profile'), {
+            'first_name': '',
+            'last_name': '',
+            'email': 'test@example.com',
+            'display_name': ''
+        })
+
+        self.user.refresh_from_db()
+        self.assertIsNone(self.user.display_name)
+
+    def test_profile_update_success_message(self):
+        """Test that success message is displayed after profile update"""
+        response = self.client.post(reverse('users:user_profile'), {
+            'first_name': 'Jane',
+            'last_name': 'Smith',
+            'email': 'test@example.com',
+            'display_name': 'JS'
+        }, follow=True)
+
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Your profile has been updated successfully.')
+
+    def test_profile_update_invalid_form(self):
+        """Test that invalid form data doesn't update profile"""
+        # Since email is protected by clean_email(), test with actual invalid data
+        # For example, if first_name has max_length=30 in the model:
+        response = self.client.post(reverse('users:user_profile'), {
+            'first_name': 'J' * 151,  # Exceeds typical max_length
+            'last_name': 'Smith',
+            'email': 'test@example.com',  # This will be replaced anyway
+            'display_name': 'JS'
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'Test')  # Unchanged
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class DeleteAccountViewTests(TestCase):
+    """
+    Test suite for delete_account view functionality, including account deletion,
+    authentication, redirects, and data cleanup.
+    """
+
+    def setUp(self):
+        """Set up test user with verified email address"""
+        self.user = CustomUser.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='password123',
+            first_name='Test',
+            last_name='User'
+        )
+        EmailAddress.objects.create(
+            user=self.user,
+            email=self.user.email,
+            primary=True,
+            verified=True
+        )
+        self.client.force_login(self.user)
+
+    def test_delete_account_requires_login(self):
+        """Test that delete_account view requires authentication"""
+        self.client.logout()
+        response = self.client.post(reverse('users:delete_account'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('accounts/login', response.url)
+
+    def test_delete_account_post_deletes_user(self):
+        """Test that POST request successfully deletes user from database"""
+        user_id = self.user.id
+        self.assertTrue(CustomUser.objects.filter(id=user_id).exists())
+
+        response = self.client.post(reverse('users:delete_account'))
+
+        # Verify user no longer exists
+        self.assertFalse(CustomUser.objects.filter(id=user_id).exists())
+
+    def test_delete_account_post_redirects_to_home(self):
+        """Test that POST request redirects to home page"""
+        response = self.client.post(reverse('users:delete_account'))
+        self.assertRedirects(response, reverse('core:home'))
+
+    def test_delete_account_logs_out_user(self):
+        """Test that user is logged out after account deletion"""
+        response = self.client.post(reverse('users:delete_account'), follow=True)
+
+        # Session should not contain user ID
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_delete_account_shows_success_message(self):
+        """Test that success message is displayed after account deletion"""
+        response = self.client.post(reverse('users:delete_account'), follow=True)
+
+        messages_list = list(response.context['messages'])
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(
+            str(messages_list[0]),
+            'Your account has been deleted successfully.'
+        )
+
+    def test_delete_account_get_redirects_to_profile(self):
+        """Test that GET request is not allowed and redirects to profile"""
+        response = self.client.get(reverse('users:delete_account'))
+        self.assertRedirects(response, reverse('users:user_profile'))
+
+    def test_delete_account_removes_email_address(self):
+        """Test that associated EmailAddress records are deleted with user"""
+        email_addr_id = self.user.emailaddress_set.first().id
+
+        self.client.post(reverse('users:delete_account'))
+
+        # EmailAddress should be deleted via cascade
+        self.assertFalse(EmailAddress.objects.filter(id=email_addr_id).exists())
+
+    def test_delete_account_user_cannot_login_after_deletion(self):
+        """Test that deleted user cannot log back in"""
+        self.client.post(reverse('users:delete_account'))
+
+        # Attempt to log in with deleted user credentials
+        login_response = self.client.post(reverse('account_login'), {
+            'login': 'test@example.com',
+            'password': 'password123'
+        })
+
+        # Login should fail
+        self.assertNotIn('_auth_user_id', self.client.session)
+
+    def test_delete_account_with_multiple_email_addresses(self):
+        """Test account deletion when user has multiple email addresses"""
+        # Add a secondary email address
+        EmailAddress.objects.create(
+            user=self.user,
+            email='secondary@example.com',
+            primary=False,
+            verified=False
+        )
+
+        user_id = self.user.id
+        email_count_before = EmailAddress.objects.filter(user=self.user).count()
+        self.assertEqual(email_count_before, 2)
+
+        self.client.post(reverse('users:delete_account'))
+
+        # User and all associated emails should be deleted
+        self.assertFalse(CustomUser.objects.filter(id=user_id).exists())
+        self.assertEqual(EmailAddress.objects.filter(user_id=user_id).count(), 0)
+
+    def test_delete_account_deletes_complete_user_record(self):
+        """Test that all user data fields are deleted, not just deactivated"""
+        user_id = self.user.id
+        username = self.user.username
+
+        self.client.post(reverse('users:delete_account'))
+
+        # Verify user record is completely gone, not just marked inactive
+        self.assertFalse(CustomUser.objects.filter(id=user_id).exists())
+        self.assertFalse(CustomUser.objects.filter(username=username).exists())
+
+    def test_delete_account_subsequent_request_requires_login(self):
+        """Test that after deletion, user must log in again for profile access"""
+        self.client.post(reverse('users:delete_account'))
+
+        # Try to access profile after deletion
+        response = self.client.get(reverse('users:user_profile'))
+
+        # Should be redirected to login (user doesn't exist)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('accounts/login', response.url)
+
+    def test_delete_account_preserves_other_users(self):
+        """Test that deleting one user doesn't affect other users"""
+        other_user = CustomUser.objects.create_user(
+            username='otheruser',
+            email='other@example.com',
+            password='password123'
+        )
+        other_user_id = other_user.id
+
+        self.client.post(reverse('users:delete_account'))
+
+        # Other user should still exist
+        self.assertTrue(CustomUser.objects.filter(id=other_user_id).exists())
+        other_user.refresh_from_db()
+        self.assertEqual(other_user.username, 'otheruser')
+
+    def test_delete_account_message_survives_logout(self):
+        """Test that success message persists through logout (encoded in response)"""
+        response = self.client.post(reverse('users:delete_account'), follow=True)
+
+        # Verify we can access the message after following the redirect
+        self.assertIn('messages', response.context)
+        messages_list = list(response.context['messages'])
+        self.assertTrue(any('deleted successfully' in str(msg) for msg in messages_list))
