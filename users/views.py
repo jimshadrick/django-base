@@ -46,3 +46,31 @@ def _render_partial(request, partial_name):
 
     context = {}
     return TemplateResponse(request, partials[partial_name], context)
+
+
+@login_required
+def delete_account(request):
+    """View to handle user account deletion
+    
+    Note: By adding the message before calling logout(), the message gets encoded
+     into the response data. The framework serializes it properly so it survives 
+     the logout and redirect.
+    
+    """
+    if request.method == 'POST':
+        user = request.user
+
+        # Add the message to the session before logging out
+        messages.success(request, 'Your account has been deleted successfully.')
+
+        # Log out the user before deletion to avoid session issues
+        from django.contrib.auth import logout
+        logout(request)
+
+        # Now delete the user
+        user.delete()
+
+        return redirect('core:home')
+
+    # If GET request, don't allow direct access
+    return redirect('users:user_profile')

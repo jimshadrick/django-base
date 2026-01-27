@@ -93,7 +93,7 @@
                 <p class="mb-1">{% translate "By selecting confirm you will delete your account and any data you own." %}</p>
                 <p class="mb-0">{% translate "This action cannot be undone." %}</p>
             </div>
-            <form method="post" class="d-inline">
+            <form method="post" action="{% url 'users:delete_account' %}" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">
                     <i class="bi bi-trash me-2"></i>{% translate "Confirm" %}
