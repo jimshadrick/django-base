@@ -1,6 +1,6 @@
 [project]
 name = "django-base"
-version = "0.6.0"
+version = "0.7.0"
 description = "Base Django project template"
 readme = "README.md"
 requires-python = ">=3.13"
