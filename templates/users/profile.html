@@ -1,4 +1,4 @@
-{% extends "allauth/layouts/manage.html" %}
+{% extends "base.html" %}
 {% load allauth %}
 {% load i18n %}
 
@@ -8,76 +8,78 @@
 
 {% block content %}
     <div class="row">
-        <div class="card">
-            <div class="card-body">
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
+        <div class="col-12 col-lg-8 col-xl-6">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                {% translate "First Name" %}
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.first_name.errors }}
+                                </div>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.first_name.id_for_label }}" class="form-label">
-                            {% translate "First Name" %}
-                        </label>
-                        {{ form.first_name }}
-                        {% if form.first_name.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.first_name.errors }}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.last_name.id_for_label }}" class="form-label">
-                            {% translate "Last Name" %}
-                        </label>
-                        {{ form.last_name }}
-                        {% if form.last_name.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.last_name.errors }}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.display_name.id_for_label }}" class="form-label">
-                            {% translate "Display Name" %}
-                        </label>
-                        {{ form.display_name }}
-                        <div class="form-text">{{ form.fields.display_name.help_text }}</div>
-                        {% if form.display_name.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.display_name.errors }}
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.email.id_for_label }}" class="form-label">
-                            {% translate "Email" %}
-                        </label>
-                        {{ form.email }}
-                        <div class="form-text">{{ form.email.help_text }}</div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary mt-2">
-                        <i class="bi bi-save me-2"></i>{% translate "Save Changes" %}
-                    </button>
-                    
-                    <!-- Delete Account Button -->
-                    <a href="?partial=delete-account"
-                       up-layer="new modal"
-                       up-size="medium"
-                       up-target="#delete-confirmation"
-                       up-history="false"
-                       class="btn btn-danger mt-2">
-                        <i class="bi bi-trash me-2"></i>{% translate "Delete Account" %}
-                    </a>
-                </form>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                {% translate "Last Name" %}
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.last_name.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.display_name.id_for_label }}" class="form-label">
+                                {% translate "Display Name" %}
+                            </label>
+                            {{ form.display_name }}
+                            <div class="form-text">{{ form.fields.display_name.help_text }}</div>
+                            {% if form.display_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.display_name.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                {% translate "Email" %}
+                            </label>
+                            {{ form.email }}
+                            <div class="form-text">{{ form.email.help_text }}</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary mt-2">
+                            <i class="bi bi-save me-2"></i>{% translate "Save Changes" %}
+                        </button>
+                        
+                        <!-- Delete Account Button -->
+                        <a href="?partial=delete-account"
+                           up-layer="new modal"
+                           up-size="medium"
+                           up-target="#delete-confirmation"
+                           up-history="false"
+                           class="btn btn-danger mt-2">
+                            <i class="bi bi-trash me-2"></i>{% translate "Delete Account" %}
+                        </a>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

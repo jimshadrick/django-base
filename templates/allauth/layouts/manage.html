@@ -3,17 +3,7 @@
 
 {% block body %}
     <div id="content">
-        {% if messages %}
-            <div class="mb-4">
-                {% for message in messages %}
-                    {% element alert level=message.tags dismissible=True %}
-                        {% slot message %}
-                            {{ message }}
-                        {% endslot %}
-                    {% endelement %}
-                {% endfor %}
-            </div>
-        {% endif %}
+        <!-- Messages are rendered globally in base.html -->
         
         <!-- Constrain content width on larger screens -->
         <div class="row">

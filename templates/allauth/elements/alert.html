@@ -1,6 +1,43 @@
 {% load allauth %}
-<div role="alert"
-     class="alert alert-xs {% if attrs.level == "error" %}alert-warning{% else %}alert-info{% endif %}">
-    {% slot message %}
-    {% endslot %}
+<!-- Enhanced alert message for all alerts -->
+{% load allauth %}
+
+{# Centralized Bootstrap 5 alert used by allauth and base.html #}
+<div
+        role="alert"
+        class="alert alert-dismissible fade show d-flex align-items-start py-3 px-3 fs-6
+        {% if attrs.level == 'error' %}
+            alert-danger
+        {% elif attrs.level == 'warning' %}
+            alert-warning
+        {% elif attrs.level == 'success' %}
+            alert-success
+        {% else %}
+            alert-info
+        {% endif %}">
+    
+    {# Severity-aware icon #}
+    {% if attrs.level == 'error' %}
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {% elif attrs.level == 'warning' %}
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+    {% elif attrs.level == 'success' %}
+        <i class="bi bi-check-circle-fill me-2"></i>
+    {% else %}
+        <i class="bi bi-info-circle-fill me-2"></i>
+    {% endif %}
+    
+    {# Message text #}
+    <div class="flex-grow-1">
+        {% slot message %}
+        {% endslot %}
+    </div>
+    
+    {# Dismiss button #}
+    <button
+            type="button"
+            class="btn-close ms-2 align-self-start"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+    ></button>
 </div>
