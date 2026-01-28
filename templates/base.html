@@ -1,4 +1,5 @@
 {% load static %}
+{% load allauth %}
 {% load i18n %}
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
@@ -36,6 +37,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 </head>
 
+<!-- Body Wrapper -->
 <body class="d-flex min-vh-100">
 <a class="visually-hidden-focusable" href="#content">{% translate "Skip to main content" %}</a>
 
@@ -212,20 +214,24 @@
                 {% endblock topbar_actions %}
             </div>
         </div>
-        <!-- Django Messages Container (not Unpoly-managed) -->
-        <div id="django-messages">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center"
-                     role="alert">
-                    <i class="bi bi-check-circle me-2"></i>
-                    <span>{{ message }}</span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        </div>
-        <!-- Unpoly Flash Messages Container (kept empty for Unpoly) -->
-        <div up-flashes></div>
     </header>
+    
+    <!-- Django Messages Container -->
+    {% if messages %}
+        <div id="django-messages" class="container-fluid bg-light px-4 pt-3">
+            <div class="row">
+                <div class="col-12 col-lg-8 col-xl-6">
+                    {% for message in messages %}
+                        {% element alert level=message.tags dismissible=True %}
+                            {% slot message %}
+                                {{ message }}
+                            {% endslot %}
+                        {% endelement %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
     
     <!-- Main Content Area -->
     <main id="content" class="flex-grow-1 bg-light overflow-auto">
@@ -270,5 +276,20 @@
         </footer>
     {% endblock footer %}
 </div>
+
+<!-- Script to automatically close success and info alerts after 5 seconds -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll(
+            '#django-messages .alert-success, #django-messages .alert-info'
+        ).forEach(function (alertEl) {
+            setTimeout(function () {
+                const alert = bootstrap.Alert.getOrCreateInstance(alertEl);
+                alert.close();
+            }, 5000); // 5 seconds
+        });
+    });
+</script>
+
 </body>
 </html>

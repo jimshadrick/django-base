@@ -8,15 +8,30 @@ to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 
 ### Added
+- 
+
+### Changed
+- 
+
+### Fixed
+
+-
+
+## [0.7.0] - 2026-01-28
+
+### Added
 
 - Add account deletion functionality and user profile enhancements with a confirmation modal.
-- Improved user styling in profile form and related templates with Bootstrap 5.
 
 ### Changed
 
 - Changed layout to modern sidebar navigation with compact top bar and card-based content.
+- Improved styling in the user profile form and related templates.
+- Updated alert.html for more robust handling and styling of messages using Bootstrap.
 
 ### Fixed
+
+- Duplicate messages/alerts - moved allauth message rendering to base.html.
 
 ## [0.6.0] - 2026-01-17
 
