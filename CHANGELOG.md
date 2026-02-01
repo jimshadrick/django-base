@@ -11,7 +11,9 @@ to [Semantic Versioning](https://semver.org/).
 - 
 
 ### Changed
-- 
+
+- Move account management links to the bottom of the sidebar and make it collapsible
+- Extract sidebar into separate template file for easier customization and maintenance.
 
 ### Fixed
 

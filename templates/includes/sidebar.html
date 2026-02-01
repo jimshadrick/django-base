@@ -1,0 +1,263 @@
+{% load static %}
+{% load allauth %}
+{% load i18n %}
+
+<!-- Sidebar -->
+<aside id="sidebar" class="bg-dark text-white d-flex flex-column flex-shrink-0 collapse collapse-horizontal show"
+       style="width: 260px;">
+    <!-- Sidebar Header/Brand -->
+    <div class="p-3 border-bottom border-secondary">
+        <a href="/" class="d-flex align-items-center text-white text-decoration-none">
+            <img src="{% static 'images/logo.svg' %}" alt="Logo" height="28" class="me-2">
+            <span class="fs-5 fw-semibold">Django Base</span>
+        </a>
+    </div>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="flex-grow-1 overflow-auto d-flex flex-column">
+        <ul class="nav nav-pills flex-column px-2 py-3 flex-grow-1">
+            {% block sidebar_nav %}
+                <li class="nav-item">
+                    <a href="{% url 'core:home' %}"
+                       class="nav-link text-white {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="bi bi-house-door me-2"></i>
+                        {% translate "Home" %}
+                    </a>
+                </li>
+                <!-- Example: Add more app feature nav items here in child templates -->
+            {% endblock sidebar_nav %}
+        </ul>
+        
+        {% if user.is_authenticated %}
+            <!-- Account Settings Section - Pushed to bottom with divider -->
+            <div class="px-2 pb-3">
+                <hr class="border-secondary opacity-50 my-2">
+                
+                <!-- Determine if we're on an account page -->
+                {% with on_account_page=False %}
+                    {% url 'account_email' as email_url_ %}
+                    {% url 'account_change_password' as change_password_url_ %}
+                    {% url 'socialaccount_connections' as connections_url_ %}
+                    {% url 'mfa_index' as mfa_index_url_ %}
+                    {% url 'usersessions_list' as usersessions_list_url_ %}
+                    
+                    {% if request.resolver_match.url_name == 'user_profile' or request.resolver_match.url_name == 'account_email' or request.resolver_match.url_name == 'account_change_password' or 'socialaccount' in request.resolver_match.url_name or 'mfa' in request.resolver_match.url_name or 'usersessions' in request.resolver_match.url_name %}
+                        {% with on_account_page=True %}
+                            <!-- Collapsible Account Section -->
+                            <div class="accordion accordion-flush" id="accountAccordion">
+                                <div class="accordion-item bg-transparent border-0">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bg-transparent text-white-50 fw-semibold shadow-none w-100 text-start rounded"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#accountCollapse"
+                                                aria-expanded="true"
+                                                aria-controls="accountCollapse"
+                                                style="padding: 0.5rem 1rem; font-size: 1rem;">
+                                            <i class="bi bi-gear me-2"></i>
+                                            {% translate "Account" %}
+                                        </button>
+                                    </h2>
+                                    <div id="accountCollapse" class="accordion-collapse collapse show"
+                                         data-bs-parent="#accountAccordion">
+                                        <div class="accordion-body p-0">
+                                            <ul class="nav nav-pills flex-column">
+                                                <li class="nav-item">
+                                                    <a href="{% url 'users:user_profile' %}"
+                                                       class="nav-link text-white-50 {% if request.resolver_match.url_name == 'user_profile' %}active{% endif %} ps-4">
+                                                        <i class="bi bi-person-circle me-2 opacity-75"></i>
+                                                        {% translate "Profile" %}
+                                                    </a>
+                                                </li>
+                                                
+                                                {% if email_url_ %}
+                                                    <li class="nav-item">
+                                                        <a href="{{ email_url_ }}"
+                                                           class="nav-link text-white-50 {% if request.resolver_match.url_name == 'account_email' %}active{% endif %} ps-4">
+                                                            <i class="bi bi-envelope me-2 opacity-75"></i>
+                                                            {% translate "Email" %}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if change_password_url_ %}
+                                                    <li class="nav-item">
+                                                        <a href="{{ change_password_url_ }}"
+                                                           class="nav-link text-white-50 {% if request.resolver_match.url_name == 'account_change_password' %}active{% endif %} ps-4">
+                                                            <i class="bi bi-key me-2 opacity-75"></i>
+                                                            {% translate "Password" %}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if connections_url_ %}
+                                                    <li class="nav-item">
+                                                        <a href="{{ connections_url_ }}"
+                                                           class="nav-link text-white-50 {% if 'socialaccount' in request.resolver_match.url_name %}active{% endif %} ps-4">
+                                                            <i class="bi bi-share me-2 opacity-75"></i>
+                                                            {% translate "Social Accounts" %}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if mfa_index_url_ %}
+                                                    <li class="nav-item">
+                                                        <a href="{{ mfa_index_url_ }}"
+                                                           class="nav-link text-white-50 {% if 'mfa' in request.resolver_match.url_name %}active{% endif %} ps-4">
+                                                            <i class="bi bi-shield-check me-2 opacity-75"></i>
+                                                            {% translate "Two-Factor" %}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                                
+                                                {% if usersessions_list_url_ %}
+                                                    <li class="nav-item">
+                                                        <a href="{{ usersessions_list_url_ }}"
+                                                           class="nav-link text-white-50 {% if 'usersessions' in request.resolver_match.url_name %}active{% endif %} ps-4">
+                                                            <i class="bi bi-clock-history me-2 opacity-75"></i>
+                                                            {% translate "Sessions" %}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    {% else %}
+                        <!-- Collapsed by default when not on account pages -->
+                        <div class="accordion accordion-flush" id="accountAccordion">
+                            <div class="accordion-item bg-transparent border-0">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-transparent text-white-50 fw-semibold shadow-none w-100 text-start rounded"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#accountCollapse"
+                                            aria-expanded="false"
+                                            aria-controls="accountCollapse"
+                                            style="padding: 0.5rem 1rem; font-size: 1rem;">
+                                        <i class="bi bi-gear me-2"></i>
+                                        {% translate "Account" %}
+                                    </button>
+                                </h2>
+                                <div id="accountCollapse" class="accordion-collapse collapse"
+                                     data-bs-parent="#accountAccordion">
+                                    <div class="accordion-body p-0">
+                                        <ul class="nav nav-pills flex-column">
+                                            <li class="nav-item">
+                                                <a href="{% url 'users:user_profile' %}"
+                                                   class="nav-link text-white-50 ps-4">
+                                                    <i class="bi bi-person-circle me-2 opacity-75"></i>
+                                                    {% translate "Profile" %}
+                                                </a>
+                                            </li>
+                                            
+                                            {% if email_url_ %}
+                                                <li class="nav-item">
+                                                    <a href="{{ email_url_ }}"
+                                                       class="nav-link text-white-50 ps-4">
+                                                        <i class="bi bi-envelope me-2 opacity-75"></i>
+                                                        {% translate "Email" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            {% if change_password_url_ %}
+                                                <li class="nav-item">
+                                                    <a href="{{ change_password_url_ }}"
+                                                       class="nav-link text-white-50 ps-4">
+                                                        <i class="bi bi-key me-2 opacity-75"></i>
+                                                        {% translate "Password" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            {% if connections_url_ %}
+                                                <li class="nav-item">
+                                                    <a href="{{ connections_url_ }}"
+                                                       class="nav-link text-white-50 ps-4">
+                                                        <i class="bi bi-share me-2 opacity-75"></i>
+                                                        {% translate "Social Accounts" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            {% if mfa_index_url_ %}
+                                                <li class="nav-item">
+                                                    <a href="{{ mfa_index_url_ }}"
+                                                       class="nav-link text-white-50 ps-4">
+                                                        <i class="bi bi-shield-check me-2 opacity-75"></i>
+                                                        {% translate "Two-Factor" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            {% if usersessions_list_url_ %}
+                                                <li class="nav-item">
+                                                    <a href="{{ usersessions_list_url_ }}"
+                                                       class="nav-link text-white-50 ps-4">
+                                                        <i class="bi bi-clock-history me-2 opacity-75"></i>
+                                                        {% translate "Sessions" %}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endif %}
+    </nav>
+    
+    <!-- Sidebar Footer -->
+    <div class="border-top border-secondary p-3">
+        {% if user.is_authenticated %}
+            <!-- User Info -->
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-2"
+                         style="width: 32px; height: 32px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <span class="fw-medium">{{ user.get_display_name|truncatechars:20 }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                    {% url 'users:user_profile' as profile_url_ %}
+                    {% if profile_url_ %}
+                        <li>
+                            <a class="dropdown-item" href="{{ profile_url_ }}">
+                                <i class="bi bi-person-circle me-2"></i>{% translate "Manage Account" %}
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                    {% endif %}
+                    <li>
+                        <a class="dropdown-item" href="{% url 'account_logout' %}">
+                            <i class="bi bi-box-arrow-right me-2"></i>{% translate "Sign Out" %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            <!-- Auth Buttons -->
+            <div class="d-grid gap-2">
+                <a href="{% url 'account_login' %}" class="btn btn-outline-light btn-sm">
+                    {% translate "Sign In" %}
+                </a>
+                {% url 'account_signup' as signup_url_ %}
+                {% if signup_url_ %}
+                    <a href="{{ signup_url_ }}" class="btn btn-light btn-sm">
+                        {% translate "Sign Up" %}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</aside>
