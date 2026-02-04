@@ -183,24 +183,11 @@ On the server run the following scripts (under `sudo`:
 
 ---
 
-## Template Change Log
+## Version History
 
-0.1.0 - Initial template structure
-0.2.0 - Add deployment scripts
-0.3.0 - Improve authentication setup and formatted templates
-0.4.0 - Add email configuration with AnyMail and Mailgun
-0.5.0 - Polish deployment process
-0.5.1 - Fixed hardcoded ref in scripts, added env variable validation and comments
-0.6.0 - Upgrade to Django 6.0.1 and related dependencies, unit tests
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes and releases.
 
-### v0.6.0 (Current Template Version)
-
-- ✅ Django 6.0.1 with modern configuration
-- ✅ User authentication and customized email templates using django-allauth
-- ✅ VPS deployment scripts tested
-- ✅ PostgreSQL integration working
-- ✅ Unit tests for core application and user management
-- 🚧 Considering adding support for Unpoly
+---
 
 ### Template Roadmap
 
@@ -213,3 +200,35 @@ On the server run the following scripts (under `sudo`:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## Data Management & Privacy Implementation
+
+### Database Backup Guidelines
+
+When configuring production backups after deployment, follow these best practices to align with GDPR requirements and
+the Privacy Policy:
+
+**Required Practices:**
+
+- Keep backup retention short and defined (e.g., 7–30 days)
+- Avoid long-term archival backups unless truly needed
+- Encrypt backups at rest
+- Don't make backups easily queryable or browsable
+- Document (even briefly) that backups are for disaster recovery only
+
+**Backup Procedures NOT Required:**
+
+The following are *not* necessary under GDPR as long as backups are protected, retention is limited, and data isn't used
+for new purposes:
+
+- Scrubbing individual users from backups
+- Building backup-aware deletion logic
+- Providing backup restoration access to users
+
+**Compliance Note:** GDPR explicitly allows backup data to persist temporarily after account deletion, provided that:
+
+1. Backups are protected with appropriate security measures
+2. Retention periods are limited and defined
+3. Backup data is not used for any purpose other than disaster recovery
