@@ -8,16 +8,18 @@ to [Semantic Versioning](https://semver.org/).
 ## Unreleased
 
 ### Added
-- 
+
+### Changed
+
+### Fixed
+
+## [0.8.0] - 2026-02-04
 
 ### Changed
 
 - Move account management links to the bottom of the sidebar and make it collapsible
-- Extract sidebar into separate template file for easier customization and maintenance.
-
-### Fixed
-
--
+- Extract the sidebar into a separate template file for easier customization and maintenance.
+- Updated privacy policy template and documented database backup procedures for compliance.
 
 ## [0.7.0] - 2026-01-28
 
