@@ -193,7 +193,6 @@ See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes and releases.
 
 - [ ] Automatic logout for signed-in users after a specified period
 - [ ] Implement time zones tracking for users
-- [ ] Add automated testing setup
 
 ---
 

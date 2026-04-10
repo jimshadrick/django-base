@@ -1,56 +1,233 @@
-/* Override active pill color globally */
-.nav-pills .nav-link.active {
-    background-color: var(--bs-secondary) !important; /* Use Bootstrap's secondary color */
-    color: #fff; /* Keep text white */
+/* ============================================================================
+   APP SHELL - Main Layout Container
+   ============================================================================ */
+
+.app-shell {
+    display: flex;
+    min-height: 100vh;
 }
 
-.nav-pills .nav-link {
-    color: var(--bs-dark);
-}
+/* ============================================================================
+   SIDEBAR - Primary Navigation Container
+   ============================================================================ */
 
-/* Sidebar Styles */
 #sidebar {
-    transition: margin-left 0.3s ease-in-out;
+    width: 260px;
+    height: 100vh;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Sidebar Header / Brand Section */
+#sidebar .sidebar-header {
+    flex-shrink: 0;
+    padding: 0.75rem;
+}
+
+#sidebar .sidebar-header a {
+    transition: opacity 0.2s ease-in-out;
+}
+
+#sidebar .sidebar-header a:hover {
+    opacity: 0.8;
+}
+
+/* Sidebar Navigation Menu - Scrollable Area */
+#sidebar .sidebar-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Webkit scrollbar styling for Chrome/Safari */
+#sidebar .sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+#sidebar .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#sidebar .sidebar-nav::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+#sidebar .sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Navigation Link Styling */
 #sidebar .nav-link {
     border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.25rem;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.15rem;
+    color: rgba(255, 255, 255, 0.8);
     transition: all 0.2s ease-in-out;
 }
 
 #sidebar .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 1);
 }
 
 #sidebar .nav-link.active {
     background-color: var(--bs-primary);
-    color: white !important;
+    color: var(--bs-white);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
 }
 
-/* Sidebar collapse for mobile */
-@media (max-width: 991.98px) {
-    #sidebar:not(.show) {
-        margin-left: -260px;
-    }
+/* Sidebar Footer / User Profile Section */
+#sidebar .sidebar-footer {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Smooth transitions for Unpoly */
-[up-transition] {
-    transition: opacity 0.2s ease-in-out;
+#sidebar .sidebar-footer .dropdown {
+    width: 100%;
 }
 
-/* Card hover effects */
+/* User Dropdown Toggle Button */
+#sidebar .sidebar-footer .dropdown-toggle {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    border: none;
+    text-align: left;
+    transition: all 0.2s ease-in-out;
+}
+
+#sidebar .sidebar-footer .dropdown-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 1);
+}
+
+#sidebar .sidebar-footer .dropdown-toggle::after {
+    margin-left: auto;
+}
+
+/* User Dropdown Menu - Positioned Above Button */
+#sidebar .sidebar-footer .dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    width: calc(100% - 1.5rem);
+    margin: 0 0.75rem 0.5rem 0.75rem;
+    min-width: auto;
+}
+
+/* Dropdown Menu Items */
+#sidebar .dropdown-item {
+    padding: 0.65rem 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease-in-out;
+}
+
+#sidebar .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 1);
+}
+
+#sidebar .dropdown-item.active,
+#sidebar .dropdown-item:active {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+}
+
+/* ============================================================================
+   CONTENT SHELL - Main Content Area Container
+   ============================================================================ */
+
+.content-shell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* ============================================================================
+   COMPONENT ENHANCEMENTS
+   ============================================================================ */
+
+/* Card Styling and Hover Effects */
 .card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-color: rgba(0, 0, 0, 0.05);
 }
 
 .card:hover {
     transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
 }
 
-/* List group item hover */
+/* Card Header Styling */
+.card-header {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* List Group Item Action Hover */
 .list-group-item-action:hover {
-    background-color: var(--bs-light);
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN - Mobile Adjustments (< 768px)
+   ============================================================================ */
+
+@media (max-width: 767.98px) {
+    /* Switch to vertical layout on mobile */
+    .app-shell {
+        flex-direction: column;
+        height: auto;
+    }
+
+    /* Make sidebar full-width on mobile */
+    #sidebar {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    /* Keep header fixed size on mobile */
+    #sidebar .sidebar-header {
+        flex-shrink: 0;
+    }
+
+    /* Allow navigation to flow naturally on mobile */
+    #sidebar .sidebar-nav {
+        max-height: none;
+        overflow: visible;
+    }
+
+    /* Adjust dropdown menu for mobile */
+    #sidebar .sidebar-footer .dropdown-menu {
+        position: static;
+        width: 100%;
+        margin: 0.5rem 0 0 0;
+        bottom: auto;
+        left: auto;
+        right: auto;
+    }
+
+    /* Content shell on mobile */
+    .content-shell {
+        height: auto;
+        overflow-y: visible;
+    }
+
+    /* Reduce container padding on mobile */
+    #content .container-lg {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
