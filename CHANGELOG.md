@@ -11,11 +11,19 @@ to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+### Fixed
+
+## [0.8.1] - 2026-04-11
+
+### Changed
+
 - Refactor the sidebar template for improved structure and viewability on smaller screens.
 - Update the user profile dropdown to include user management links.
 - Enhance the overall sidebar layout and navigation.
 
 ### Fixed
+
+- Resolve allauth PermissionDenied on login/signup due to IP detection breaking change (allauth)
 
 ## [0.8.0] - 2026-02-04
 

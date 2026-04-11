@@ -85,8 +85,8 @@ ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-
 PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
+ALLAUTH_TRUSTED_CLIENT_IP_HEADER = "X-Real-IP"  # specifically allow header to be set by a trusted component 
 
 # Session settings
 SESSION_COOKIE_AGE = 86400  # 24 hours (24 * 60 * 60 seconds)

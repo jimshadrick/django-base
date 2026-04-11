@@ -17,8 +17,7 @@ ENV/
 env.bak/
 venv.bak/
 
-# UV package manager
-uv.lock
+# uv package manager
 .uv_cache/
 .ruff_cache/
 .mypy_cache/

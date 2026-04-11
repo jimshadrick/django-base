@@ -1,16 +1,16 @@
 [project]
 name = "django-base"
-version = "0.8.0"
+version = "0.8.1"
 description = "Base Django project template"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "django>=6.0.1",
-    "django-allauth[socialaccount]>=65.7.0",
-    "django-anymail[mailgun]>=13.0",
-    "django-debug-toolbar>=5.2.0",
-    "environs[django]>=14.1.1",
-    "gunicorn>=23.0.0",
-    "psycopg[binary]>=3.2.6",
-    "whitenoise>=6.9.0",
+    "django~=6.0.1", # allows 6.0.x only
+    "django-allauth[socialaccount]~=65.13.1", # allows 65.13.x only
+    "django-anymail[mailgun]~=13.0", # allows 13.x only
+    "django-debug-toolbar>=6.1.0", # allows updates to the debug toolbar
+    "environs[django]~=14.1.1", # allows 14.1.x only
+    "gunicorn~=23.0.0", # allows 23.0.x only
+    "psycopg[binary]~=3.2.6", # allows 3.2.x only
+    "whitenoise~=6.9.0", # allows 6.9.x only
 ]
